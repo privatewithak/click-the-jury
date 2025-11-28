@@ -12,7 +12,7 @@ function App() {
 
   return (
     <>
-      <div className="relative flex h-screen w-screen items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 gap-10">
+      <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-auto bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 gap-10 md:flex-row">
       <ClickCard image={Jury} sound={JurySound} divname='jury' />
       <ClickCard image={Spear} sound={SpearSound} divname='spear' />
       <ClickCard image={Razor} sound={RazorSound} divname='razor' />
