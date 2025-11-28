@@ -1,12 +1,12 @@
-# Click the JURY.
+# Click the ~JURY~ CCA.
 
 ## simple clicker 
 ### features:
-- click the jury
-- click the jury
-- click the jury
-- click the jury
-- click the jury
+- click the cca
+- click the cca
+- click the cca
+- click the cca
+- click the cca
 
 ### stack:
 react + swc
