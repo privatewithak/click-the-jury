@@ -12,3 +12,12 @@
 react + swc
 tailwindcss
 
+
+## todo:
+- progression
+- leaderboard
+- backend
+- animations
+- combos
+
+
