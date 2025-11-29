@@ -7,6 +7,7 @@ import { CARD_THEMES } from "./cardthemes";
 import Citizen from '/citizen.png'
 import CitizenSound from '/citizen.wav'
 import LoyalistSound from '/loyalist.wav'
+import Loyalist from '/loyalist.png'
 import Razor from '/razor.png'
 import RazorSound from '/razor.wav'
 import Spear from '/spear.png'
@@ -27,7 +28,7 @@ function Game() {
         },
         {
             id: 'loyalist',
-            image: null,
+            image: Loyalist,
             sound: LoyalistSound,
             clicksNeeded: 150,
             currentClicks: 0,
