@@ -1,14 +1,9 @@
 import {useState, useRef, useEffect, useCallback} from 'react'
-  
+import { CARD_THEMES } from './cardthemes';
 
-function ClickCard({ image, sound, divname }) {
+function ClickCard({ image, sound, divname, clicksNeeded, unlocked, onClick, clicks, totalClicks, theme }) {
   
   const [particles, setParticles] = useState([]);
-    const [clicks, setClicks] = useState(() => {
-              const saved = localStorage.getItem(`clicks-${divname}`)
-
-        return saved !== null ? Number(saved) : 0;
-  });
   const nextIdRef = useRef(0);
   
   const audioCtxRef = useRef(null);
@@ -16,13 +11,11 @@ function ClickCard({ image, sound, divname }) {
     const loadingRef = useRef(false);
     
 
-
-
+  const progress = clicksNeeded > 0 ? Math.min(clicks / clicksNeeded, 1) : 0
+  
     
 
-    useEffect(() => {
-        localStorage.setItem(`clicks-${divname}`, String(clicks))
-    }, [clicks, divname])
+
 
   const loadSoundBuffer = useCallback(async () => {
     if (audioBufferRef.current || loadingRef.current) return;
@@ -123,12 +116,14 @@ function ClickCard({ image, sound, divname }) {
           : merged;
       });
 
-      setClicks((c) => c + 1);
+      onClick()
     
       playClickSound();
     },
-    [playClickSound]
+    [playClickSound, onClick]
   );
+
+  
 
   // particle fall anim
   useEffect(() => {
@@ -178,6 +173,8 @@ function ClickCard({ image, sound, divname }) {
       }
     };
   }, []);
+
+  if (!unlocked) return;
     
     return (
       <>
@@ -202,17 +199,18 @@ function ClickCard({ image, sound, divname }) {
       
       <div className="relative z-10 w-full max-w-md px-4">
         <div className="flex flex-col items-center gap-6 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl md:p-8">
-          <div className="flex w-full items-center align-content text-xs text-slate-300 md:text-sm">
-            <span className="font-mono text-emerald-300 text-center mx-auto">
+          <div className="flex w-full align-content text-xs text-slate-300 md:text-sm justify-between">
+              <span className={`font-mono ${theme.textAccent} text-center mx-auto`}>
               clicks: {clicks}
-            </span>
+              </span>
+              <span className={`font-mono ${theme.textAccent} text-center mx-auto`}>total clicks: {totalClicks}</span>
           </div>
 
           <div
             className="relative mt-2 flex aspect-square w-full max-w-xs cursor-pointer select-none items-center justify-center sm:max-w-sm"
             onClick={handleClick}
           >
-            <div className="absolute inset-0 rounded-[2rem] border border-emerald-400/40 bg-slate-900/70 shadow-[0_0_60px_rgba(52,211,153,0.45)]" />
+            <div className={`absolute inset-0 rounded-[2rem] border ${theme.border} bg-slate-900/70 ${theme.cardHalo}`} />
             <img
               src={image}
               alt="meme"
@@ -224,9 +222,19 @@ function ClickCard({ image, sound, divname }) {
           <p className="text-center text-xs text-slate-300 sm:text-sm">
           click the {divname}
                     </p>
-                    <button className='bg-indigo-600 p-2 w-4/10 rounded-xl hover:cursor-pointer hover:bg-indigo-600/70 transition-colors duration-200 ease-in-out shadow-lg shadow-indigo-500/40 hover:shadow-md transition-shadow' onClick={() => { setClicks(0); localStorage.setItem(`clicks-${divname}`, String(clicks)) }}>Reset</button>
+          </div>
+
+          <div className='border border-white/10 bg-white/5 relative rounded-xl mt-5 py-2'> <h3 className='text-center mb-4 text-xl'>progress: {(progress * 100).toFixed(1)}%</h3>
+            <div className="w-full max-w-xs h-4 rounded-full bg-slate-800 overflow-hidden mx-auto mb-3 ">
+  <div
+    className={`h-full ${theme.progressFill} transition-all duration-200`}
+    style={{ width: `${progress * 100}%` }}
+  />
+</div>
+            <p className='text-center mx-auto'>clicks to the next card: {clicksNeeded}</p>
+          </div>
         </div>
-      </div>
+        
     </>
     )
     
