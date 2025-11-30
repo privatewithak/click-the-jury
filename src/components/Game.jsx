@@ -337,7 +337,7 @@ useEffect(() => {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.8, opacity: 0, y: -10 }}
           transition={{ duration: 0.15 }}
-          className={`absolute left-auto top-3 rounded-2xl border ${theme.border} ${theme.chipBg} px-4 py-2 text-xs font-mono uppercase tracking-wide text-white shadow-xl`}
+          className={`absolute left-auto md:top-35 lg:top-8 top-4 rounded-2xl border ${theme.border} ${theme.chipBg} px-4 py-2 text-xs font-mono uppercase tracking-wide text-white shadow-xl`}
         >
           x{combo} combo!
         </motion.div>
