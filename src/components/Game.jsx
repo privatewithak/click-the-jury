@@ -68,7 +68,7 @@ function Game() {
   
   const [combo, setCombo] = useState(0)
 
-  const COMBO_WINDOW = 500; // ms between clicks to reset the combo
+  const COMBO_WINDOW = 800; // ms between clicks to reset the combo
   const comboTimeoutRef = useRef(null)
   
 
