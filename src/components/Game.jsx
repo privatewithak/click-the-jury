@@ -350,7 +350,7 @@ useEffect(() => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.9 }}
           transition={{ duration: 0.2 }}
-          className="relative w-full h-full flex flex-col items-center"
+          className="relative w-full h-full flex flex-col items-center mt-15"
         >
           <ClickCard
             key={current.id}
@@ -368,7 +368,7 @@ useEffect(() => {
       </AnimatePresence>
 
       
-      <div className="mt-6 w-[80%] sm:w-full max-w-md mx-auto rounded-2xl border border-white/10 bg-white/5 p-4 flex flex-col gap-3">
+      <div className="mt-6 w-[80%] sm:w-full max-w-md mx-auto rounded-2xl border border-white/10 bg-white/5 p-4 flex flex-col gap-3 mb-5">
         <h2 className="text-lg font-semibold text-center">shop</h2>
         <div className="flex items-center justify-between gap-4">
           <div>
