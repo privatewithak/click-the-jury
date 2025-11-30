@@ -388,7 +388,7 @@ useEffect(() => {
             className={`px-3 py-2 rounded-xl text-sm font-semibold w-3/10
               ${totalClicks < getUnionCost(unionWorkers)
                 ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
-                : 'bg-emerald-500 hover:bg-emerald-400 text-black'
+                : 'bg-emerald-500 hover:bg-emerald-400 text-black transition-all cursor-pointer hover:shadow-[0_0_0_1px_rgba(52,211,153,0.6),0_0_25px_rgba(52,211,153,0.8),0_0_60px_rgba(52,211,153,0.4)] shadow-md active:bg-emerald-700 active:shadow-[0_0_0_1px_rgba(15,23,42,0.9),0_0_15px_rgba(15,23,42,0.9)] active:translate-y-[-1px] duration-200 ease-in-out'
               }`}
           >
             hire
