@@ -78,7 +78,7 @@ function Game() {
         clicksNeeded: 2200,
         currentClicks: 0,
         unlocked: false,
-        theme: 'amber'
+        theme: 'red'
       },
       {
         id: 'echo',
