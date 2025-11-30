@@ -224,7 +224,7 @@ function ClickCard({ image, sound, divname, clicksNeeded, unlocked, onClick, cli
                     </p>
           </div>
 
-          <div className='border border-white/10 bg-white/5 relative rounded-xl mt-5 py-2'> <h3 className='text-center mb-4 text-xl'>progress: {(progress * 100).toFixed(1)}%</h3>
+          <div className='border border-white/10 bg-white/5 relative backdrop-blur-xl rounded-xl mt-5 py-2'> <h3 className='text-center mb-4 text-xl'>progress: {(progress * 100).toFixed(1)}%</h3>
             <div className="w-full max-w-xs h-4 rounded-full bg-slate-800 overflow-hidden mx-auto mb-3 ">
   <div
     className={`h-full ${theme.progressFill} transition-all duration-200`}
