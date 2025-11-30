@@ -142,7 +142,7 @@ function Game() {
   const [unionWorkers, setUnionWorkers] = useState(0)
 
   const UNION_BASE_COST = 50
-  const UNION_COST_MULT = 1.5
+  const UNION_COST_MULT = 1.2
 
   function getUnionCost(count) {
     return Math.floor(UNION_BASE_COST * Math.pow(UNION_COST_MULT, count))
