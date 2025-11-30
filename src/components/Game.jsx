@@ -13,6 +13,18 @@ import Razor from '/razor.png'
 import RazorSound from '/razor.wav'
 import Spear from '/spear.png'
 import SpearSound from '/spear.wav'
+import Defunct from '/defunct.png'
+import DefunctSound from '/defunct.wav'
+import Dagger from '/dagger.png'
+import DaggerSound from '/dagger.wav'
+import Echo from '/echo.png'
+import EchoSound from '/echo.wav'
+import Ranger from '/ranger.png'
+import RangerSound from '/ranger.wav'
+import King from '/king.png'
+import KingSound from '/king.wav'
+import Phantom from '/phantom.png'
+import PhantomSound from '/phantom.wav'
 
 function Game() {
         const [totalClicks, setTotalClicks] = useState(0)
@@ -62,7 +74,62 @@ function Game() {
         currentClicks: 0,
         unlocked: false,
         theme: 'amber'
-      }
+      },
+      {
+        id: 'echo',
+        image: Echo,
+        sound: EchoSound,
+        clicksNeeded: 6750,
+        currentClicks: 0,
+        unlocked: false,
+        theme: 'sky'
+      },
+      {
+        id: 'dagger',
+        image: Dagger,
+        sound: DaggerSound,
+        clicksNeeded: 20000,
+        currentClicks: 0,
+        unlocked: false,
+        theme: 'rose'
+      },
+      {
+        id: 'ranger',
+        image: Ranger,
+        sound: RangerSound,
+        clicksNeeded: 45000,
+        currentClicks: 0,
+        unlocked: false,
+        theme: 'blue'
+      },
+      {
+        id: 'king',
+        image: King,
+        sound: KingSound,
+        clicksNeeded: 100000,
+        currentClicks: 0,
+        unlocked: false,
+        theme: 'slate'
+      },
+      {
+        id: 'phantom',
+        image: Phantom,
+        sound: PhantomSound,
+        clicksNeeded: 350000,
+        currentClicks: 0,
+        unlocked: false,
+        theme: 'neutral'
+      },
+      {
+        id: 'defunct',
+        image: Defunct,
+        sound: DefunctSound,
+        clicksNeeded: 1000000,
+        currentClicks: 0,
+        unlocked: false,
+        theme: 'slate'
+      },
+
     ])
   
   
