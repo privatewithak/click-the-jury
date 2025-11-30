@@ -1,12 +1,12 @@
-# Click the ~JURY~ CCA.
+# Click the ~JURY~ ~CCA~ UU.
 
 ## simple clicker 
 ### features:
-- click the cca
+- click the uu
 - progress through the cards
 - buy union slaves to click for you
 - flex your combo to opps
-- click the cca
+- click the uu
 
 ### stack:
 - react + swc
