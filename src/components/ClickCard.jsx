@@ -32,7 +32,7 @@ function ClickCard({ image, sound, divname, clicksNeeded, unlocked, onClick, cli
     } finally {
       loadingRef.current = false;
     }
-  }, []);
+  }, [sound]);
 
   const playClickSound = useCallback(async () => {
     try {
@@ -75,7 +75,7 @@ function ClickCard({ image, sound, divname, clicksNeeded, unlocked, onClick, cli
     } catch (e) {
       console.warn("Error:", e);
     }
-  }, [loadSoundBuffer]);
+  }, [loadSoundBuffer, sound]);
 
   const handleClick = useCallback(
     (e) => {

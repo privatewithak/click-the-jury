@@ -26,6 +26,11 @@ import KingSound from '/king.wav'
 import Phantom from '/phantom.png'
 import PhantomSound from '/phantom.wav'
 
+
+const SAVE_KEY = 'jury-clicker-progress-v1';
+
+
+
 function Game() {
         const [totalClicks, setTotalClicks] = useState(0)
         const [currentLevel, setCurrentLevel] = useState(0)
@@ -132,6 +137,7 @@ function Game() {
 
     ])
   
+  const [hydrated, setHydrated] = useState(false);
   
   const [combo, setCombo] = useState(0)
 
@@ -140,6 +146,74 @@ function Game() {
   
 
   const [unionWorkers, setUnionWorkers] = useState(0)
+
+  useEffect(() => {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+
+      if (typeof data.totalClicks === 'number') {
+        setTotalClicks(data.totalClicks);
+      }
+
+      if (typeof data.currentLevel === 'number') {
+        setCurrentLevel(data.currentLevel);
+      }
+
+      if (typeof data.unionWorkers === 'number') {
+        setUnionWorkers(data.unionWorkers);
+      }
+
+      if (Array.isArray(data.levels)) {
+        setLevels(prev => {
+          return prev.map((baseLevel, idx) => {
+            const savedLevel = data.levels[idx];
+            if (!savedLevel) return baseLevel;
+
+            return {
+              ...baseLevel,
+              currentClicks: savedLevel.currentClicks ?? baseLevel.currentClicks,
+              unlocked: savedLevel.unlocked ?? baseLevel.unlocked,
+              clicksNeeded: baseLevel.clicksNeeded,
+            };
+          });
+        });
+      }
+    }
+  } catch (e) {
+    console.error('failed to load save', e);
+  } finally {
+    setHydrated(true);
+  }
+}, []);
+
+  
+
+
+ useEffect(() => {
+  
+  if (!hydrated) return;
+
+  const saveData = {
+    totalClicks,
+    currentLevel,
+    unionWorkers,
+    levels: levels.map(l => ({
+      currentClicks: l.currentClicks,
+      unlocked: l.unlocked,
+      clicksNeeded: l.clicksNeeded,
+      id: l.id,
+    })),
+  };
+
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+  } catch (e) {
+    console.error('failed to save progress', e);
+  }
+}, [hydrated, totalClicks, currentLevel, unionWorkers, levels]);
+
 
   const UNION_BASE_COST = 50
   const UNION_COST_MULT = 1.2
