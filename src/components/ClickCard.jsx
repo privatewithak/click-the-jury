@@ -1,17 +1,180 @@
-import {useState, useRef, useEffect, useCallback} from 'react'
+import {
+  useRef,
+  useEffect,
+  useCallback,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import { CARD_THEMES } from './cardthemes';
 
-function ClickCard({ image, sound, divname, clicksNeeded, unlocked, onClick, clicks, totalClicks, theme }) {
-  
-  const [particles, setParticles] = useState([]);
+
+const PARTICLES_PER_CLICK = 22;
+const MAX_PARTICLES = 450;
+const GRAVITY = 0.32;
+
+function createBurstParticles(baseX, baseY, nextIdRef, particlesArray) {
+  const newParticles = [];
+
+  for (let i = 0; i < PARTICLES_PER_CLICK; i++) {
+    const id = nextIdRef.current++;
+
+    const angle = Math.random() * Math.PI * 2;
+    const radius = 20 + Math.random() * 110;
+
+    const offsetX = Math.cos(angle) * radius;
+    const offsetY = Math.sin(angle) * radius;
+
+    const size = 18 + Math.random() * 44;
+
+    newParticles.push({
+      id,
+      x: baseX + offsetX,
+      y: baseY + offsetY,
+      vx: (Math.random() - 0.5) * 3.2,
+      vy: -3 - Math.random() * 2.5,
+      size,
+      rotation: (Math.random() - 0.5) * 80,
+    });
+  }
+
+  const merged = [...particlesArray, ...newParticles];
+
+  if (merged.length > MAX_PARTICLES) {
+    return merged.slice(merged.length - MAX_PARTICLES);
+  }
+
+  return merged;
+}
+
+const ParticlesCanvas = forwardRef(function ParticlesCanvas({ image }, ref) {
+  const canvasRef = useRef(null);
+  const particlesRef = useRef([]);
   const nextIdRef = useRef(0);
+  const imageRef = useRef(null);
+
+  // load particle img
+  useEffect(() => {
+    const img = new Image();
+    img.src = image;
+    imageRef.current = img;
+  }, [image]);
+
+  // give outside method emitBurstAtClientPosition
+  useImperativeHandle(
+    ref,
+    () => ({
+      emitBurstAtClientPosition: (clientX, clientY) => {
+        particlesRef.current = createBurstParticles(
+          clientX,
+          clientY,
+          nextIdRef,
+          particlesRef.current
+        );
+      },
+    }),
+    []
+  );
+
+  // inf render physics loop without react
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+
+    const render = () => {
+      const width =
+        window.innerWidth || document.documentElement.clientWidth || 0;
+      const height =
+        window.innerHeight || document.documentElement.clientHeight || 0;
+
+      // adjust canvas for window size
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const particles = particlesRef.current;
+      const img = imageRef.current;
+
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+
+        const vx = p.vx;
+        const vy = p.vy + GRAVITY;
+        const x = p.x + vx;
+        const y = p.y + vy;
+
+        p.vx = vx;
+        p.vy = vy;
+        p.x = x;
+        p.y = y;
+
+        const offBottom = p.y - p.size > height + 40;
+        const offLeft = p.x + p.size < -40;
+        const offRight = p.x - p.size > width + 40;
+
+        if (offBottom || offLeft || offRight) {
+          // del outside of the screen
+          particles.splice(i, 1);
+          continue;
+        }
+
+        if (img && img.complete) {
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.globalAlpha = 0.9;
+          ctx.drawImage(img, -p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+        }
+      }
+
+      animationFrameId = window.requestAnimationFrame(render);
+    };
+
+    animationFrameId = window.requestAnimationFrame(render);
+
+    return () => {
+      if (animationFrameId) {
+        window.cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="pointer-events-none fixed inset-0 z-20 select-none will-change-transform"
+    />
+  );
+});
+
+
+function ClickCard({
+  image,
+  sound,
+  divname,
+  clicksNeeded,
+  unlocked,
+  onClick,
+  clicks,
+  totalClicks,
+  theme,
+}) {
   
   const audioCtxRef = useRef(null);
   const audioBufferRef = useRef(null);
-    const loadingRef = useRef(false);
-    
+  const loadingRef = useRef(false);
 
-  const progress = clicksNeeded > 0 ? Math.min(clicks / clicksNeeded, 1) : 0
+  // ref for particle emitter
+  const particlesCanvasRef = useRef(null);
+
+  const progress =
+    clicksNeeded > 0 ? Math.min(clicks / clicksNeeded, 1) : 0;
   
     
 
@@ -77,124 +240,40 @@ function ClickCard({ image, sound, divname, clicksNeeded, unlocked, onClick, cli
     }
   }, [loadSoundBuffer, sound]);
 
-  const handleClick = useCallback(
-    (e) => {
-      const baseX = e.clientX;
-      const baseY = e.clientY;
+const handleClick = useCallback(
+  (e) => {
+    const baseX = e.clientX;
+    const baseY = e.clientY;
 
-      const PARTICLES_PER_CLICK = 22;
+    // throw particles at canvas
+    if (particlesCanvasRef.current) {
+      particlesCanvasRef.current.emitBurstAtClientPosition(baseX, baseY);
+    }
 
-      setParticles((prev) => {
-        const newParticles = [];
-
-        for (let i = 0; i < PARTICLES_PER_CLICK; i++) {
-          const id = nextIdRef.current++;
-
-          const angle = Math.random() * Math.PI * 2;
-          const radius = 20 + Math.random() * 110;
-
-          const offsetX = Math.cos(angle) * radius;
-          const offsetY = Math.sin(angle) * radius;
-
-          const size = 18 + Math.random() * 44;
-
-          newParticles.push({
-            id,
-            x: baseX + offsetX,
-            y: baseY + offsetY,
-            vx: (Math.random() - 0.5) * 3.2,
-            vy: -3 - Math.random() * 2.5,
-            size,
-            rotation: (Math.random() - 0.5) * 80
-          });
-        }
-
-        const merged = [...prev, ...newParticles];
-        const MAX_PARTICLES = 450;
-        return merged.length > MAX_PARTICLES
-          ? merged.slice(merged.length - MAX_PARTICLES)
-          : merged;
-      });
-
-      onClick()
-    
-      playClickSound();
-    },
-    [playClickSound, onClick]
-  );
+    onClick();
+    playClickSound();
+  },
+  [playClickSound, onClick]
+);
 
   
 
-  // particle fall anim
-  useEffect(() => {
-    let animationFrameId;
+  // audio cleanup
+useEffect(() => {
+  return () => {
+    if (audioCtxRef.current) {
+      audioCtxRef.current.close();
+    }
+  };
+}, []);
 
-    const update = () => {
-      setParticles((prev) => {
-        if (prev.length === 0) return prev;
-
-        const gravity = 0.32;
-        const width =
-          window.innerWidth || document.documentElement.clientWidth || 0;
-        const height =
-          window.innerHeight || document.documentElement.clientHeight || 0;
-
-        const next = prev
-          .map((p) => {
-            const vx = p.vx;
-            const vy = p.vy + gravity;
-            const x = p.x + vx;
-            const y = p.y + vy;
-
-            return { ...p, x, y, vx, vy };
-          })
-          .filter((p) => {
-            const offBottom = p.y - p.size > height + 40;
-            const offLeft = p.x + p.size < -40;
-            const offRight = p.x - p.size > width + 40;
-            return !(offBottom || offLeft || offRight);
-          });
-
-        return next;
-      });
-
-      animationFrameId = window.requestAnimationFrame(update);
-    };
-
-    animationFrameId = window.requestAnimationFrame(update);
-
-    return () => {
-      if (animationFrameId) {
-        window.cancelAnimationFrame(animationFrameId);
-      }
-      // cleanup audio
-      if (audioCtxRef.current) {
-        audioCtxRef.current.close();
-      }
-    };
-  }, []);
 
   if (!unlocked) return;
     
     return (
       <>
       
-      {particles.map((p) => (
-        <img
-          key={p.id}
-          src={image}
-          alt=""
-          className="pointer-events-none fixed z-20 select-none will-change-transform"
-          style={{
-            left: p.x,
-            top: p.y,
-            width: p.size,
-            height: p.size,
-            transform: `translate(-50%, -50%) rotate(${p.rotation}deg)`,
-            opacity: 0.9
-          }}
-        />
-      ))}
+   <ParticlesCanvas ref={particlesCanvasRef} image={image} />
 
       
       <div className="relative z-10 w-full max-w-md px-4">
