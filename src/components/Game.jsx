@@ -166,6 +166,10 @@ function Game() {
         setUnionWorkers(data.unionWorkers);
       }
 
+      if (typeof data.clickPower === 'number') {
+        setClickPower(data.clickPower)
+      }
+
       if (Array.isArray(data.levels)) {
         setLevels(prev => {
           return prev.map((baseLevel, idx) => {
@@ -200,6 +204,7 @@ function Game() {
     totalClicks,
     currentLevel,
     unionWorkers,
+    clickPower,
     levels: levels.map(l => ({
       currentClicks: l.currentClicks,
       unlocked: l.unlocked,
@@ -213,7 +218,7 @@ function Game() {
   } catch (e) {
     console.error('failed to save progress', e);
   }
-}, [hydrated, totalClicks, currentLevel, unionWorkers, levels]);
+}, [hydrated, totalClicks, currentLevel, unionWorkers, levels, clickPower]);
 
 
   const UNION_BASE_COST = 50
