@@ -368,7 +368,7 @@ useEffect(() => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -20, scale: 0.9 }}
           transition={{ duration: 0.2 }}
-          className="relative w-full h-full flex flex-col items-center mt-15"
+          className="relative w-full h-full flex flex-col items-center mt-20"
         >
           <ClickCard
             key={current.id}
@@ -384,6 +384,11 @@ useEffect(() => {
           />
         </motion.div>
       </AnimatePresence>
+
+      <div className="mt-15 mb-23 text-center p-2 text-slate-500 text-lg font-mono">
+        <p>shop</p>
+        <p className="arrow-anim">v</p>
+      </div>
 
       
       <div className="mt-6 w-[80%] sm:w-full max-w-md mx-auto rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 p-4 flex flex-col gap-3 mb-5">

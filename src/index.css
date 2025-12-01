@@ -15,3 +15,24 @@
     background-color: #020618;
     
 }
+
+@keyframes arrow-bounce {
+    0% {
+        transform: translateY(0);
+        
+    }
+
+    50% {
+        transform: translateY(8px);
+        
+    }
+
+    100% {
+        transform: translateY(0);
+        
+    }
+}
+
+.arrow-anim {
+    animation: arrow-bounce 2s infinite;
+}
