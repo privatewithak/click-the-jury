@@ -33,7 +33,8 @@ const SAVE_KEY = 'jury-clicker-progress-v1';
 
 function Game() {
         const [totalClicks, setTotalClicks] = useState(0)
-        const [currentLevel, setCurrentLevel] = useState(0)
+  const [currentLevel, setCurrentLevel] = useState(0)
+  const [clickPower, setClickPower] = useState(1)
     const [levels, setLevels] = useState([
         {
             id: 'citizen',
@@ -221,7 +222,13 @@ function Game() {
   function getUnionCost(count) {
     return Math.floor(UNION_BASE_COST * Math.pow(UNION_COST_MULT, count))
   }
-
+const CLICK_POWER_BASE_COST = 20
+  const CLICK_POWER_COST_MULT = 1.5
+  
+  function getClickPowerCost(clickPower) {
+  const level = clickPower - 1
+  return Math.floor(CLICK_POWER_BASE_COST * Math.pow(CLICK_POWER_COST_MULT, level))
+}
 
     const current = levels[currentLevel]
   const theme = CARD_THEMES[current.theme];
@@ -241,7 +248,7 @@ useEffect(() => {
     const copy = prev.map(l => ({ ...l }));
     const level = copy[currentLevel];
 
-    level.currentClicks += 1;
+    level.currentClicks += clickPower;
 
     
 
@@ -261,7 +268,7 @@ useEffect(() => {
     return copy;
   });
         
-    setTotalClicks(prev => prev + 1)
+    setTotalClicks(prev => prev + clickPower);
     
     // combo logic 
     setCombo(prevCombo => {
@@ -282,7 +289,18 @@ useEffect(() => {
     setCombo(0);
     comboTimeoutRef.current = null;
   }, COMBO_WINDOW);
-}
+  }
+  
+  function handleBuyClickPower() {
+    const cost = getClickPowerCost(clickPower)
+
+    if (totalClicks < cost) {
+      return
+    }
+
+    setTotalClicks(prev => prev - cost)
+    setClickPower(prev => prev + 1)
+  }
 
   function handleBuyUnionWorker() {
     const cost = getUnionCost(unionWorkers)
@@ -393,6 +411,19 @@ useEffect(() => {
           >
             hire
           </button>
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+          <div className="font-medium">citizen slave</div>
+          <div className="text-sm text-slate-300">+1 power to the click</div>
+          <div className="text-sm text-slate-400">current price: {getClickPowerCost(clickPower)}</div>
+            <div className="text-xs text-slate-500">you have: {clickPower - 1} citizen slaves</div>
+          </div>
+           <button onClick={handleBuyClickPower} disabled={totalClicks < getClickPowerCost(clickPower)} className={`px-3 py-2 rounded-xl text-sm font-semibold w-3/10
+              ${totalClicks < getClickPowerCost(clickPower)
+                ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
+                : 'bg-emerald-500 hover:bg-emerald-400 text-black transition-all cursor-pointer hover:shadow-[0_0_0_1px_rgba(52,211,153,0.6),0_0_25px_rgba(52,211,153,0.8),0_0_60px_rgba(52,211,153,0.4)] shadow-md active:bg-emerald-700 active:shadow-[0_0_0_1px_rgba(15,23,42,0.9),0_0_15px_rgba(15,23,42,0.9)] active:translate-y-[-1px] duration-200 ease-in-out'
+              }`}>hire</button>
         </div>
       </div>
     </div>
