@@ -3,8 +3,6 @@ import ClickCard from "./ClickCard";
 // eslint-disable-next-line no-unused-vars
 import { AnimatePresence, motion } from "framer-motion";
 import { CARD_THEMES } from "./cardthemes";
-
-
 const SAVE_KEY = 'jury-clicker-progress-v1';
 import {level} from './levels'
 

@@ -24,6 +24,8 @@ import Jury from '/meme.png'
 import JurySound from '/jury.wav'
 import Rebel from '/rebel.png'
 import RebelSound from '/rebel.wav'
+import FreakSpear from '/freakspear.png'
+import FreakSpearSound from '/freakspear.wav'
 
 export const level = [
         {
@@ -142,7 +144,16 @@ export const level = [
         currentClicks: 0,
         unlocked: false,
         theme: 'amber'
-      }
+    },
+    {
+        id: 'freaky spear',
+        image: FreakSpear,
+        sound: FreakSpearSound,
+        clicksNeeded: 10000000,
+        currentClicks: 0,
+        unlocked: false,
+        theme: 'rose'
+    }
 
 
     ]
