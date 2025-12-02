@@ -1,142 +1,19 @@
 import { useState, useRef, useEffect } from "react"
 import ClickCard from "./ClickCard";
-import Jury from '/meme.png'
-import JurySound from '/jury.wav'
 // eslint-disable-next-line no-unused-vars
 import { AnimatePresence, motion } from "framer-motion";
 import { CARD_THEMES } from "./cardthemes";
-import Citizen from '/citizen.png'
-import CitizenSound from '/citizen.wav'
-import LoyalistSound from '/loyalist.wav'
-import Loyalist from '/loyalist.png'
-import Razor from '/razor.png'
-import RazorSound from '/razor.wav'
-import Spear from '/spear.png'
-import SpearSound from '/spear.wav'
-import Defunct from '/defunct.png'
-import DefunctSound from '/defunct.wav'
-import Dagger from '/dagger.png'
-import DaggerSound from '/dagger.wav'
-import Echo from '/echo.png'
-import EchoSound from '/echo.wav'
-import Ranger from '/ranger.png'
-import RangerSound from '/ranger.wav'
-import King from '/king.png'
-import KingSound from '/king.wav'
-import Phantom from '/phantom.png'
-import PhantomSound from '/phantom.wav'
 
 
 const SAVE_KEY = 'jury-clicker-progress-v1';
-
+import {level} from './levels'
 
 
 function Game() {
         const [totalClicks, setTotalClicks] = useState(0)
   const [currentLevel, setCurrentLevel] = useState(0)
   const [clickPower, setClickPower] = useState(1)
-    const [levels, setLevels] = useState([
-        {
-            id: 'citizen',
-            image: Citizen,
-            sound: CitizenSound,
-            clicksNeeded: 40,
-            currentClicks: 0,
-            unlocked: true,
-            theme: 'cyan'
-        },
-        {
-            id: 'loyalist',
-            image: Loyalist,
-            sound: LoyalistSound,
-            clicksNeeded: 150,
-            currentClicks: 0,
-          unlocked: false,
-            theme: 'teal'
-        },
-    {
-        id: 'jury',
-        image: Jury,
-        sound: JurySound,
-        clicksNeeded: 400,
-        currentClicks: 0,
-      unlocked: false,
-        theme: 'yellow'
-      },
-      {
-        id: 'razor',
-        image: Razor,
-        sound: RazorSound,
-        clicksNeeded: 1000,
-        currentClicks: 0,
-        unlocked: false,
-        theme: 'slate'
-      },
-      {
-        id: 'spear',
-        image: Spear,
-        sound: SpearSound,
-        clicksNeeded: 2200,
-        currentClicks: 0,
-        unlocked: false,
-        theme: 'red'
-      },
-      {
-        id: 'echo',
-        image: Echo,
-        sound: EchoSound,
-        clicksNeeded: 6750,
-        currentClicks: 0,
-        unlocked: false,
-        theme: 'sky'
-      },
-      {
-        id: 'dagger',
-        image: Dagger,
-        sound: DaggerSound,
-        clicksNeeded: 20000,
-        currentClicks: 0,
-        unlocked: false,
-        theme: 'rose'
-      },
-      {
-        id: 'ranger',
-        image: Ranger,
-        sound: RangerSound,
-        clicksNeeded: 45000,
-        currentClicks: 0,
-        unlocked: false,
-        theme: 'blue'
-      },
-      {
-        id: 'king',
-        image: King,
-        sound: KingSound,
-        clicksNeeded: 100000,
-        currentClicks: 0,
-        unlocked: false,
-        theme: 'slate'
-      },
-      {
-        id: 'phantom',
-        image: Phantom,
-        sound: PhantomSound,
-        clicksNeeded: 350000,
-        currentClicks: 0,
-        unlocked: false,
-        theme: 'neutral'
-      },
-      {
-        id: 'defunct',
-        image: Defunct,
-        sound: DefunctSound,
-        clicksNeeded: 1000000,
-        currentClicks: 0,
-        unlocked: false,
-        theme: 'slate'
-      },
-
-    ])
+    const [levels, setLevels] = useState(level)
   
   const [hydrated, setHydrated] = useState(false);
   
@@ -390,7 +267,7 @@ useEffect(() => {
         </motion.div>
       </AnimatePresence>
 
-      <div className="mt-15 mb-23 text-center p-2 text-slate-500 text-lg font-mono">
+      <div className="mt-10 mb-23 text-center p-2 text-slate-500 text-lg font-mono">
         <p>shop</p>
         <p className="arrow-anim">v</p>
       </div>
