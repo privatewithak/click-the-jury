@@ -103,7 +103,7 @@ function Game() {
     return Math.floor(UNION_BASE_COST * Math.pow(UNION_COST_MULT, count))
   }
 const CLICK_POWER_BASE_COST = 20
-  const CLICK_POWER_COST_MULT = 1.5
+  const CLICK_POWER_COST_MULT = 1.3
   
   function getClickPowerCost(clickPower) {
   const level = clickPower - 1
