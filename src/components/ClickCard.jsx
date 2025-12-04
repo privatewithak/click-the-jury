@@ -299,7 +299,7 @@ useEffect(() => {
           </div>
 
           <p className="text-center text-xs text-slate-300 sm:text-sm">
-          click the {divname}
+          click the jolly {divname}
                     </p>
           </div>
 
