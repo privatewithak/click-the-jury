@@ -26,6 +26,8 @@ import Rebel from '/rebel.png'
 import RebelSound from '/rebel.wav'
 import FreakSpear from '/freakspear.png'
 import FreakSpearSound from '/freakspear.wav'
+import Wolfjc from '/wolfjc.png'
+import WolfjcSound from '/wolfjc.wav'
 
 export const level = [
         {
@@ -119,13 +121,13 @@ export const level = [
         theme: 'neutral'
       },
       {
-        id: 'defunct',
-        image: Defunct,
-        sound: DefunctSound,
+        id: 'wolfjc',
+        image: Wolfjc,
+        sound: WolfjcSound,
         clicksNeeded: 1000000,
         currentClicks: 0,
         unlocked: false,
-        theme: 'slate'
+        theme: 'rose'
       },
       {
         id: 'rebev',
