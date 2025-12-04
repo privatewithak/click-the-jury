@@ -271,7 +271,7 @@ useEffect(() => {
       </div>
 
       
-      <div className="mt-6 w-[80%] sm:w-full max-w-md mx-auto rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 p-4 flex flex-col gap-3 mb-5">
+      <div className="mt-6 w-[80%] sm:w-full max-w-md mx-auto rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 p-4 flex flex-col gap-3 mb-5 z-2">
         <h2 className="text-lg font-semibold text-center">shop</h2>
         <div className="flex items-center justify-between gap-4">
           <div>
