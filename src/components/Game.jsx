@@ -277,7 +277,7 @@ useEffect(() => {
           <div>
             <div className="font-medium">UNION worker</div>
             <div className="text-sm text-slate-300">+1 click per second</div>
-            <div className="text-sm text-slate-400">
+            <div className="text-sm text-slate-400 ">
               current price: {getUnionCost(unionWorkers)} total clicks
             </div>
             <div className="text-xs text-slate-500">
