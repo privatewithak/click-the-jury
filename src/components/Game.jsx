@@ -196,8 +196,15 @@ const critFrenzy = useCallback(() => {
       }
       return false;
     }
-    const critActive = isCrit || handleCrit();
-    const delta = critActive ? clickPower * 2 : clickPower;
+
+const now = Date.now();
+
+if (critEndsAtRef.current <= now && Math.random() < 0.034) {
+  handleCrit()
+}
+
+const critActive = critEndsAtRef.current > now;
+const delta = critActive ? clickPower * 2 : clickPower;
   setLevels(prev => {
     const copy = prev.map(l => ({ ...l }));
     const level = copy[currentLevel];
@@ -310,7 +317,8 @@ const critFrenzy = useCallback(() => {
   return (
     <div className="relative flex min-h-screen w-full flex-col items-center justify-center">
       <div className="mb-12 mx-auto">
-      <div className="absolute left-1/2 md:top-35 lg:top-8 top-4 transform -translate-x-1/2 flex flex-col items-center z-10 gap-2">
+        <div className="absolute left-1/2 md:top-35 lg:top-8 top-4 transform -translate-x-1/2 flex flex-col items-center z-10 gap-2">
+          <AnimatePresence>
       {combo > 1 && (
         <motion.div
           initial={{ scale: 0.5, opacity: 0, y: -10 }}
@@ -321,9 +329,11 @@ const critFrenzy = useCallback(() => {
         >
           x{combo} combo!
         </motion.div>
-      )}
-          {isCrit && (
+            )}
+          </AnimatePresence>
           <AnimatePresence>
+          {isCrit && (
+          
         <motion.div
           initial={{ scale: 0.5, opacity: 0, y: -10 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -333,8 +343,9 @@ const critFrenzy = useCallback(() => {
         >
               <p className={`${theme.textAccent}`}>CRIT FRENZY! {critSecondsLeft}s</p>
         </motion.div>
+            
+            )}
             </AnimatePresence>
-        )}
         </div>
         </div>
 
