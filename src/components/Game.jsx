@@ -133,7 +133,7 @@ useEffect(() => {
   
   // crit frenzy logic
 const critFrenzy = useCallback(() => {
-  const critDuration = 8400;
+  const critDuration = 5400;
   const now = Date.now();
 
   if (critEndsAtRef.current > now) return false;
