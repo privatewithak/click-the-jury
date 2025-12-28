@@ -28,6 +28,10 @@ import FreakSpear from '/freakspear.png'
 import FreakSpearSound from '/freakspear.wav'
 import Wolfjc from '/wolfjc.png'
 import WolfjcSound from '/wolfjc.wav'
+import Sam from '/sam.png'
+import SamSound from '/sam.wav'
+import Spikewall from '/spikewall.png'
+import SpikewallSound from '/spikewall.wav'
 
 export const level = [
         {
@@ -119,12 +123,21 @@ export const level = [
         currentClicks: 0,
         unlocked: false,
         theme: 'neutral'
+  },
+  {
+    id: 'spikewall',
+    image: Spikewall,
+    sound: SpikewallSound,
+    clicksNeeded: 700000,
+    currentClicks: 0,
+    unlocked: false,
+    theme: 'amber'
       },
       {
         id: 'wolfjc',
         image: Wolfjc,
         sound: WolfjcSound,
-        clicksNeeded: 1000000,
+        clicksNeeded: 1500000,
         currentClicks: 0,
         unlocked: false,
         theme: 'rose'
@@ -133,7 +146,7 @@ export const level = [
         id: 'rebev',
         image: Rebel,
         sound: RebelSound,
-        clicksNeeded: 1500000,
+        clicksNeeded: 2500000,
         currentClicks: 0,
         unlocked: false,
         theme: 'orange'
@@ -155,6 +168,15 @@ export const level = [
         currentClicks: 0,
         unlocked: false,
         theme: 'rose'
+  },
+  {
+    id: 'magician',
+    image: Sam,
+    sound: SamSound,
+    clicksNeeded: 27000000,
+    currentClicks: 0,
+    unlocked: false,
+    theme: 'cyan'
     }
 
 

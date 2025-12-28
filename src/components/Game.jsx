@@ -186,9 +186,6 @@ const critFrenzy = useCallback(() => {
   
 
   function handleClickOnCurrent() {
-    const now = Date.now();
-
-
 
 
     const handleCrit = () => {
@@ -205,7 +202,7 @@ const critFrenzy = useCallback(() => {
     const copy = prev.map(l => ({ ...l }));
     const level = copy[currentLevel];
 
-    level.currentClicks += delta;
+    level.currentClicks += 1000000;
 
     
 
