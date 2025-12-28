@@ -202,7 +202,7 @@ const critFrenzy = useCallback(() => {
     const copy = prev.map(l => ({ ...l }));
     const level = copy[currentLevel];
 
-    level.currentClicks += 1000000;
+    level.currentClicks += delta;
 
     
 
