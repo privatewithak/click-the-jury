@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import ClickCard from "./ClickCard";
 // eslint-disable-next-line no-unused-vars
 import { AnimatePresence, motion } from "framer-motion";
@@ -11,8 +11,16 @@ function Game() {
         const [totalClicks, setTotalClicks] = useState(0)
   const [currentLevel, setCurrentLevel] = useState(0)
   const [clickPower, setClickPower] = useState(1)
-    const [levels, setLevels] = useState(level)
-  
+  const [levels, setLevels] = useState(level)
+
+  const [isCrit, setIsCrit] = useState(false);
+  const [critRemainingMs, setCritRemainingMs] = useState(0);
+
+  const critTimeoutRef = useRef(null);
+  const critIntervalRef = useRef(null);
+  const critEndsAtRef = useRef(0);
+  const critRafRef = useRef(null);
+
   const [hydrated, setHydrated] = useState(false);
   
   const [combo, setCombo] = useState(0)
@@ -22,6 +30,8 @@ function Game() {
   
 
   const [unionWorkers, setUnionWorkers] = useState(0)
+
+  const critSecondsLeft = Math.max(0, critRemainingMs / 1000).toFixed(2);
 
   useEffect(() => {
   try {
@@ -120,15 +130,82 @@ useEffect(() => {
     }
   };
 }, []);
+  
+  // crit frenzy logic
+const critFrenzy = useCallback(() => {
+  const critDuration = 8400;
+  const now = Date.now();
+
+  if (critEndsAtRef.current > now) return false;
+
+  if (critTimeoutRef.current) clearTimeout(critTimeoutRef.current);
+  if (critIntervalRef.current) clearInterval(critIntervalRef.current);
+  if (critRafRef.current) cancelAnimationFrame(critRafRef.current);
+
+  critEndsAtRef.current = now + critDuration;
+
+  setIsCrit(true);
+  setCritRemainingMs(critDuration);
+
+  // animation frame for countdown
+  const tick = () => {
+    const remaining = critEndsAtRef.current - Date.now();
+    if (remaining <= 0) {
+      setCritRemainingMs(0);
+      critRafRef.current = null;
+      return;
+    }
+    setCritRemainingMs(remaining);
+    critRafRef.current = requestAnimationFrame(tick);
+  };
+
+  critRafRef.current = requestAnimationFrame(tick);
+
+  
+  critTimeoutRef.current = setTimeout(() => {
+    setIsCrit(false);
+    setCritRemainingMs(0);
+    critEndsAtRef.current = 0;
+
+    if (critRafRef.current) {
+      cancelAnimationFrame(critRafRef.current);
+      critRafRef.current = null;
+    }
+    critTimeoutRef.current = null;
+  }, critDuration);
+}, []);
+
+  
+  
+  useEffect(() => {
+    return () => {
+      if (critTimeoutRef.current) clearTimeout(critTimeoutRef.current);
+      if (critRafRef.current) cancelAnimationFrame(critRafRef.current);
+    }
+  }, []);
+  
 
   function handleClickOnCurrent() {
+    const now = Date.now();
 
 
+
+
+    const handleCrit = () => {
+      const random = Math.random();
+      if (random < 0.034) { // 3.4% chance
+      return critFrenzy();
+        
+      }
+      return false;
+    }
+    const critActive = isCrit || handleCrit();
+    const delta = critActive ? clickPower * 2 : clickPower;
   setLevels(prev => {
     const copy = prev.map(l => ({ ...l }));
     const level = copy[currentLevel];
 
-    level.currentClicks += clickPower;
+    level.currentClicks += delta;
 
     
 
@@ -147,8 +224,13 @@ useEffect(() => {
 
     return copy;
   });
-        
-    setTotalClicks(prev => prev + clickPower);
+  
+  
+
+    setTotalClicks(prev =>
+          critActive ? prev + clickPower * 2 : prev + clickPower
+          );
+
     
     // combo logic 
     setCombo(prevCombo => {
@@ -192,6 +274,7 @@ useEffect(() => {
     setTotalClicks(prev => prev - cost)
 
     setUnionWorkers(prev => prev + 1)
+
     }
 
   useEffect(() => {
@@ -229,17 +312,34 @@ useEffect(() => {
 
   return (
     <div className="relative flex min-h-screen w-full flex-col items-center justify-center">
+      <div className="mb-12 mx-auto">
+      <div className="absolute left-1/2 md:top-35 lg:top-8 top-4 transform -translate-x-1/2 flex flex-col items-center z-10 gap-2">
       {combo > 1 && (
         <motion.div
           initial={{ scale: 0.5, opacity: 0, y: -10 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.8, opacity: 0, y: -10 }}
           transition={{ duration: 0.15 }}
-          className={`absolute left-auto md:top-35 lg:top-8 top-4 rounded-2xl border ${theme.border} ${theme.chipBg} px-4 py-2 text-xs font-mono uppercase tracking-wide text-white shadow-xl`}
+          className={`rounded-2xl border ${theme.border} ${theme.chipBg} px-4 py-2 text-xs font-mono uppercase tracking-wide text-white shadow-xl`}
         >
           x{combo} combo!
         </motion.div>
       )}
+          {isCrit && (
+          <AnimatePresence>
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0, y: -10 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.2, opacity: 0, y: -10 }}
+          transition={{ duration: 0.25 }}
+          className={`rounded-2xl border ${theme.border} ${theme.chipBg} px-4 py-2 text-xs font-mono uppercase tracking-wide text-white shadow-xl`}
+        >
+              <p className={`${theme.textAccent}`}>CRIT FRENZY! {critSecondsLeft}s</p>
+        </motion.div>
+            </AnimatePresence>
+        )}
+        </div>
+        </div>
 
       <AnimatePresence mode="wait">
         <motion.div

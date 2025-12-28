@@ -4,7 +4,9 @@ import {
   useCallback,
   forwardRef,
   useImperativeHandle,
+  useState,
 } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { CARD_THEMES } from './cardthemes';
 
 
@@ -176,7 +178,31 @@ function ClickCard({
   const progress =
     clicksNeeded > 0 ? Math.min(clicks / clicksNeeded, 1) : 0;
   
-    
+  const [displayProgress, setDisplayProgress] = useState(progress * 100);
+  const progressMotion = useMotionValue(progress * 100);
+  const progressSpring = useSpring(progressMotion, { stiffness: 200, damping: 30 });
+  const widthPercent = useTransform(progressSpring, (v) => `${v}%`);
+  const [isPulse, setIsPulse] = useState(false);
+  const progressBarRef = useRef(null);
+
+
+
+  // sync motion value when logical progress changes
+  useEffect(() => {
+    progressMotion.set(progress * 100);
+  }, [progress, progressMotion]);
+
+  // subscribe spring to update display number
+  useEffect(() => {
+    const unsub = progressSpring.on('change', (v) => setDisplayProgress(v));
+    return () => unsub();
+  }, [progressSpring]);
+
+  useEffect(() => {
+    setIsPulse(true);
+    const id = setTimeout(() => setIsPulse(false), 260);
+    return () => clearTimeout(id);
+  }, [clicks]);
 
 
 
@@ -303,14 +329,40 @@ useEffect(() => {
                     </p>
           </div>
 
-          <div className='border border-white/10 bg-white/5 relative backdrop-blur-xl rounded-xl mt-5 py-2'> <h3 className='text-center mb-4 text-xl'>progress: {(progress * 100).toFixed(1)}%</h3>
-            <div className="w-full max-w-xs h-4 rounded-full bg-slate-800 overflow-hidden mx-auto mb-3 ">
-  <div
-    className={`h-full ${theme.progressFill} transition-all duration-200`}
-    style={{ width: `${progress * 100}%` }}
-  />
-</div>
-            <p className='text-center mx-auto'>clicks to the next card: {clicksNeeded}</p>
+          <div className='border border-white/10 bg-white/5 relative backdrop-blur-xl rounded-xl mt-5 py-2'>
+            <h3 className='text-center mb-4 text-xl'>progress: {displayProgress.toFixed(1)}%</h3>
+
+            <div ref={progressBarRef} className={`w-full max-w-xs h-4 rounded-full ${theme.progressTrack} overflow-hidden mx-auto mb-3 relative`}>
+              <motion.div
+                className={`relative h-full ${theme.progressFill} progress-gradient rounded-full`}
+                style={{ width: widthPercent, transformOrigin: 'left center', overflow: 'visible', borderRadius: '999px' }}
+                animate={{ scaleY: isPulse ? 1.06 : 1 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+              >
+                <motion.div
+                  className="absolute top-1/2 right-0 -translate-y-1/2 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shadow-lg"
+                  animate={{ scale: isPulse ? 1.12 : 1 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+                >
+                  <div className="w-3 h-3 rounded-full bg-white" />
+                </motion.div>
+              </motion.div>
+            </div>
+
+            <p className='text-center mx-auto'>clicks to the next card: {clicksNeeded - clicks}</p>
+
+            <style>{`
+              @keyframes moveGradient {
+                0% { background-position: 0% 0%; }
+                100% { background-position: 200% 0%; }
+              }
+              .progress-gradient {
+                background-image: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02), rgba(255,255,255,0.06));
+                background-size: 200% 100%;
+                background-blend-mode: overlay;
+                animation: moveGradient 3.8s linear infinite;
+              }
+            `}</style>
           </div>
         </div>
         
