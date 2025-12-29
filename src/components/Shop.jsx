@@ -24,24 +24,27 @@ function Shop({
   function handleBuyClickPower() {
     const cost = getClickPowerCost(clickPower)
 
-    if (totalClicks < cost) {
-      return
-    }
+    setTotalClicks(prev => {
+      if (prev < cost) {
+        return prev
+      }
 
-    setTotalClicks(prev => prev - cost)
-    setClickPower(prev => prev + 1)
+      setClickPower(prevPower => prevPower + 1)
+      return prev - cost
+    })
   }
 
   function handleBuyUnionWorker() {
     const cost = getUnionCost(unionWorkers)
     
-    if (totalClicks < cost) {
-      return
-    }
+    setTotalClicks(prev => {
+      if (prev < cost) {
+        return prev
+      }
 
-    setTotalClicks(prev => prev - cost)
-
-    setUnionWorkers(prev => prev + 1)
+      setUnionWorkers(prevWorkers => prevWorkers + 1)
+      return prev - cost
+    })
 
     }
 

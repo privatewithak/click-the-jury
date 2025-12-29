@@ -10,7 +10,7 @@ import Updatelog from "./Updatelog";
 
 
 function Game() {
-        const [totalClicks, setTotalClicks] = useState(0)
+  const [totalClicks, setTotalClicks] = useState(0)
   const [currentLevel, setCurrentLevel] = useState(0)
   const [clickPower, setClickPower] = useState(1)
   const [levels, setLevels] = useState(level)
