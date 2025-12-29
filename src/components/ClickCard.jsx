@@ -363,19 +363,19 @@ useEffect(() => {
    <ParticlesCanvas ref={particlesCanvasRef} image={image} />
 
       
-      <div className="relative z-10 w-full max-w-md px-4">
+      <div className="relative z-10 w-full max-w-md px-3 sm:px-4">
         <div
           ref={workerGlowRef}
           data-worker-full="0"
-          className="worker-card-container relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl md:p-8"
+          className="worker-card-container relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4 shadow-2xl backdrop-blur-xl sm:p-5 md:p-6 lg:p-8"
           style={{ '--worker-glow-opacity': '0', '--worker-glow-scale': '0.8', '--worker-glow-height': '28px' }}
         >
           <div className={`worker-card-glow ${theme.progressFill}`} />
           {unionWorkers > 0 && (
             <div key={workerPulseKey} className={`worker-card-pulse ${theme.progressDot}`} />
           )}
-          <div className="relative z-10 flex w-full flex-col items-center gap-6">
-            <div className="flex w-full align-content text-xs text-slate-300 md:text-sm justify-between">
+          <div className="relative z-10 flex w-full flex-col items-center gap-4 sm:gap-5 md:gap-6">
+            <div className="flex w-full align-content text-[11px] text-slate-300 sm:text-xs md:text-sm justify-between">
                 <span className={`font-mono ${theme.textAccent} text-center mx-auto`}>
                 clicks: {clicks}
                 </span>
@@ -395,7 +395,7 @@ useEffect(() => {
               <div className="pointer-events-none absolute inset-0 rounded-[2rem] bg-gradient-to-t from-black/60 via-transparent to-white/10" />
             </div>
 
-            <p ref={workerTextRef} className="text-center text-xs text-slate-300 sm:text-sm">
+            <p ref={workerTextRef} className="text-center text-[11px] text-slate-300 sm:text-xs md:text-sm">
             click the jolly {divname}
               </p>
               <div className='w-8/10'>
@@ -412,10 +412,10 @@ useEffect(() => {
             </div>
           </div>
 
-          <div className='border border-white/10 bg-white/5 relative backdrop-blur-xl rounded-xl mt-5 py-2'>
-            <h3 className='text-center mb-4 text-xl'>progress: {displayProgress.toFixed(1)}%</h3>
+          <div className='border border-white/10 bg-white/5 relative backdrop-blur-xl rounded-xl mt-4 py-2 sm:mt-5 sm:py-3'>
+            <h3 className='text-center mb-3 text-lg sm:mb-4 sm:text-xl'>progress: {displayProgress.toFixed(1)}%</h3>
 
-            <div ref={progressBarRef} className={`w-full max-w-xs h-4 rounded-full ${theme.progressTrack} overflow-hidden mx-auto mb-3 relative`}>
+            <div ref={progressBarRef} className={`w-full max-w-xs h-3 rounded-full ${theme.progressTrack} overflow-hidden mx-auto mb-2 relative sm:h-4 sm:mb-3`}>
               <motion.div
                 className={`relative h-full ${theme.progressFill} progress-gradient rounded-full`}
                 style={{ width: widthPercent, transformOrigin: 'left center', overflow: 'visible', borderRadius: '999px' }}
@@ -423,16 +423,16 @@ useEffect(() => {
                 transition={{ type: 'spring', stiffness: 400, damping: 28 }}
               >
                 <motion.div
-                  className="absolute top-1/2 right-0 -translate-y-1/2 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center shadow-lg"
+                  className="absolute top-1/2 right-0 -translate-y-1/2 w-5 h-5 rounded-full bg-white/10 flex items-center justify-center shadow-lg sm:w-6 sm:h-6"
                   animate={{ scale: isPulse ? 1.12 : 1 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 24 }}
                 >
-                  <div className="w-3 h-3 rounded-full bg-white" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-white sm:w-3 sm:h-3" />
                 </motion.div>
               </motion.div>
             </div>
 
-            <p className='text-center mx-auto'>clicks to the next card: {clicksNeeded - clicks}</p>
+            <p className='text-center mx-auto text-sm sm:text-base'>clicks to the next card: {clicksNeeded - clicks}</p>
 
             <style>{`
               @keyframes moveGradient {
