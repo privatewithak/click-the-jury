@@ -245,38 +245,33 @@ const delta = critActive ? clickPower * 2 : clickPower;
   }, COMBO_WINDOW);
   }
   
-  useEffect(() => {
-    if (unionWorkers <= 0) return;
+  const handleWorkerAutoClick = useCallback(
+    (workers) => {
+      if (!Number.isFinite(workers) || workers <= 0) return;
 
-    const intervalId = setInterval(() => {
-      const clicksFromWorkers = unionWorkers
-      
-      setTotalClicks(prev => prev + unionWorkers)
+      setTotalClicks(prev => prev + workers);
 
       setLevels(prev => {
-        const copy = prev.map(l => ({ ...l }))
-        const level = copy[currentLevel]
+        const copy = prev.map(l => ({ ...l }));
+        const level = copy[currentLevel];
 
-        level.currentClicks += clicksFromWorkers
+        level.currentClicks += workers;
 
         if (level.currentClicks >= level.clicksNeeded) {
-      const nextIndex = currentLevel + 1;
-      if (copy[nextIndex]) {
-        copy[currentLevel].unlocked = false;
-        copy[nextIndex].unlocked = true;
-        setCurrentLevel(nextIndex);
-
-        setCombo(0)
-        
-      }
+          const nextIndex = currentLevel + 1;
+          if (copy[nextIndex]) {
+            copy[currentLevel].unlocked = false;
+            copy[nextIndex].unlocked = true;
+            setCurrentLevel(nextIndex);
+            setCombo(0);
+          }
         }
-        
-        return copy;
-      })
-    }, 1000)
 
-    return () => clearInterval(intervalId)
-    }, [unionWorkers, currentLevel, setLevels, setTotalClicks])
+        return copy;
+      });
+    },
+    [currentLevel, setLevels, setTotalClicks, setCurrentLevel, setCombo]
+  );
 
   return (
     <div className="relative flex min-h-screen w-full flex-col items-center justify-center">
@@ -333,6 +328,8 @@ const delta = critActive ? clickPower * 2 : clickPower;
             divname={current.id}
             totalClicks={totalClicks}
             theme={theme}
+            unionWorkers={unionWorkers}
+            onAutoClick={handleWorkerAutoClick}
           />
         </motion.div>
       </AnimatePresence>

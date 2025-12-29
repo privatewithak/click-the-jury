@@ -9,7 +9,7 @@ import {
 // eslint-disable-next-line no-unused-vars
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { CARD_THEMES } from './cardthemes';
-
+import WorkerBar from './WorkerBar';
 
 const PARTICLES_PER_CLICK = 22;
 const MAX_PARTICLES = 450;
@@ -167,6 +167,8 @@ function ClickCard({
   clicks,
   totalClicks,
   theme,
+  onAutoClick,
+  unionWorkers,
 }) {
   
   const audioCtxRef = useRef(null);
@@ -185,6 +187,9 @@ function ClickCard({
   const widthPercent = useTransform(progressSpring, (v) => `${v}%`);
   const [isPulse, setIsPulse] = useState(false);
   const progressBarRef = useRef(null);
+  const workerGlowRef = useRef(null);
+  const [workerPulseKey, setWorkerPulseKey] = useState(0);
+  const workerTextRef = useRef(null);
 
 
 
@@ -204,6 +209,61 @@ function ClickCard({
     const id = setTimeout(() => setIsPulse(false), 260);
     return () => clearTimeout(id);
   }, [clicks]);
+
+  const handleWorkerProgress = useCallback((value, isFull) => {
+    const node = workerGlowRef.current;
+    if (!node) return;
+
+    const clamped = Math.min(Math.max(value, 0), 1);
+    const full = Boolean(isFull);
+    const eased = Math.pow(clamped, 0.82);
+    const glowOpacity = eased * 0.22 + (full ? 0.05 : 0);
+    const glowScale = eased;
+
+    node.style.setProperty('--worker-glow-opacity', glowOpacity.toFixed(3));
+    node.style.setProperty('--worker-glow-scale', glowScale.toFixed(3));
+    node.dataset.workerFull = full ? '1' : '0';
+  }, []);
+
+  useEffect(() => {
+    const container = workerGlowRef.current;
+    const text = workerTextRef.current;
+    if (!container || !text) return;
+
+    const updateGlowHeight = () => {
+      const containerRect = container.getBoundingClientRect();
+      const textRect = text.getBoundingClientRect();
+      const targetTop = textRect.bottom + 10;
+      const height = Math.max(12, containerRect.bottom - targetTop);
+      container.style.setProperty('--worker-glow-height', `${Math.round(height)}px`);
+    };
+
+    updateGlowHeight();
+
+    let observer;
+    if (typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver(updateGlowHeight);
+      observer.observe(container);
+      observer.observe(text);
+    } else {
+      window.addEventListener('resize', updateGlowHeight);
+    }
+
+    return () => {
+      if (observer) {
+        observer.disconnect();
+      } else {
+        window.removeEventListener('resize', updateGlowHeight);
+      }
+    };
+  }, []);
+
+  const handleWorkerAutoClick = useCallback((workers) => {
+    if (typeof onAutoClick === 'function') {
+      onAutoClick(workers);
+    }
+    setWorkerPulseKey((prev) => prev + 1);
+  }, [onAutoClick]);
 
 
 
@@ -304,30 +364,52 @@ useEffect(() => {
 
       
       <div className="relative z-10 w-full max-w-md px-4">
-        <div className="flex flex-col items-center gap-6 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl md:p-8">
-          <div className="flex w-full align-content text-xs text-slate-300 md:text-sm justify-between">
-              <span className={`font-mono ${theme.textAccent} text-center mx-auto`}>
-              clicks: {clicks}
-              </span>
-              <span className={`font-mono ${theme.textAccent} text-center mx-auto`}>total clicks: {totalClicks}</span>
-          </div>
+        <div
+          ref={workerGlowRef}
+          data-worker-full="0"
+          className="worker-card-container relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl md:p-8"
+          style={{ '--worker-glow-opacity': '0', '--worker-glow-scale': '0.8', '--worker-glow-height': '28px' }}
+        >
+          <div className={`worker-card-glow ${theme.progressFill}`} />
+          {unionWorkers > 0 && (
+            <div key={workerPulseKey} className={`worker-card-pulse ${theme.progressDot}`} />
+          )}
+          <div className="relative z-10 flex w-full flex-col items-center gap-6">
+            <div className="flex w-full align-content text-xs text-slate-300 md:text-sm justify-between">
+                <span className={`font-mono ${theme.textAccent} text-center mx-auto`}>
+                clicks: {clicks}
+                </span>
+                <span className={`font-mono ${theme.textAccent} text-center mx-auto`}>total clicks: {totalClicks}</span>
+            </div>
 
-          <div
-            className="relative mt-2 flex aspect-square w-full max-w-xs cursor-pointer select-none items-center justify-center sm:max-w-sm"
-            onClick={handleClick}
-          >
-            <div className={`absolute inset-0 rounded-[2rem] border ${theme.border} bg-slate-900/70 ${theme.cardHalo}`} />
-            <img
-              src={image}
-              alt="meme"
-              className="relative z-10 h-[85%] w-[85%] rounded-[2rem] object-cover transition-transform duration-150 ease-out hover:scale-[1.03]"
-            />
-            <div className="pointer-events-none absolute inset-0 rounded-[2rem] bg-gradient-to-t from-black/60 via-transparent to-white/10" />
-          </div>
+            <div
+              className="relative mt-2 flex aspect-square w-full max-w-xs cursor-pointer select-none items-center justify-center sm:max-w-sm"
+              onClick={handleClick}
+            >
+              <div className={`absolute inset-0 rounded-[2rem] border ${theme.border} bg-slate-900/70 ${theme.cardHalo}`} />
+              <img
+                src={image}
+                alt="meme"
+                className="relative z-10 h-[85%] w-[85%] rounded-[2rem] object-cover transition-transform duration-150 ease-out hover:scale-[1.03]"
+              />
+              <div className="pointer-events-none absolute inset-0 rounded-[2rem] bg-gradient-to-t from-black/60 via-transparent to-white/10" />
+            </div>
 
-          <p className="text-center text-xs text-slate-300 sm:text-sm">
-          click the jolly {divname}
-                    </p>
+            <p ref={workerTextRef} className="text-center text-xs text-slate-300 sm:text-sm">
+            click the jolly {divname}
+              </p>
+              <div className='w-8/10'>
+                <WorkerBar
+                  label='union worker'
+                  enabled={unionWorkers > 0}
+                  workers={unionWorkers}
+                  workerInterval={1000}
+                  onAutoClick={handleWorkerAutoClick}
+                  onProgressChange={handleWorkerProgress}
+                  theme={theme}
+                />
+              </div>
+            </div>
           </div>
 
           <div className='border border-white/10 bg-white/5 relative backdrop-blur-xl rounded-xl mt-5 py-2'>
@@ -362,6 +444,62 @@ useEffect(() => {
                 background-size: 200% 100%;
                 background-blend-mode: overlay;
                 animation: moveGradient 3.8s linear infinite;
+              }
+
+              .worker-card-glow {
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: var(--worker-glow-height, 28px);
+                border-radius: 9999px;
+                filter: blur(16px);
+                background-image:
+                  radial-gradient(70% 140% at 50% 100%, rgba(255,255,255,0.35), rgba(255,255,255,0) 70%),
+                  linear-gradient(90deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.0) 100%);
+                background-size: 130% 160%, 200% 100%;
+                background-position: 50% 100%, 0% 100%;
+                background-blend-mode: screen;
+                box-shadow: 0 -6px 18px rgba(255,255,255,0.08);
+                transform-origin: center bottom;
+                opacity: var(--worker-glow-opacity, 0);
+                transform: scaleY(var(--worker-glow-scale, 0.8));
+                pointer-events: none;
+                z-index: 0;
+                animation: workerGlowDrift 6s ease-in-out infinite;
+              }
+
+              .worker-card-container[data-worker-full="1"] .worker-card-glow {
+                filter: blur(18px);
+                box-shadow: 0 -8px 22px rgba(255,255,255,0.12);
+              }
+
+              .worker-card-pulse {
+                position: absolute;
+                left: 6px;
+                right: 6px;
+                bottom: 2px;
+                height: 8px;
+                border-radius: 9999px;
+                filter: blur(7px);
+                transform-origin: center bottom;
+                pointer-events: none;
+                will-change: transform, opacity;
+                opacity: 0;
+                animation: workerCardPulse 0.4s ease-out;
+                z-index: 0;
+              }
+
+              @keyframes workerCardPulse {
+                0% { opacity: 0; transform: translateY(0) scaleY(0.85); }
+                40% { opacity: 0.45; transform: translateY(-2px) scaleY(1); }
+                100% { opacity: 0; transform: translateY(-5px) scaleY(1.05); }
+              }
+
+              @keyframes workerGlowDrift {
+                0% { background-position: 50% 100%, 0% 100%; }
+                50% { background-position: 50% 100%, 100% 100%; }
+                100% { background-position: 50% 100%, 0% 100%; }
               }
             `}</style>
           </div>

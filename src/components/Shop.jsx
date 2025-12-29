@@ -47,7 +47,7 @@ function Shop({
 
   return (
     <>
-      <div className="mt-10 mb-23 text-center p-2 text-slate-500 text-lg font-mono">
+      <div className="mt-6 mb-23 text-center p-2 text-slate-500 text-lg font-mono">
         <p>shop</p>
         <p className="arrow-anim">v</p>
       </div>
