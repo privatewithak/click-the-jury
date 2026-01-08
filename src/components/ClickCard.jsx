@@ -169,6 +169,7 @@ function ClickCard({
   theme,
   onAutoClick,
   unionWorkers,
+  setSelected,
 }) {
   
   const audioCtxRef = useRef(null);
@@ -363,7 +364,7 @@ useEffect(() => {
    <ParticlesCanvas ref={particlesCanvasRef} image={image} />
 
       
-      <div className="relative z-10 w-full max-w-md px-3 sm:px-4">
+      <div className="relative z-10 w-full max-w-md px-3 sm:px-4 *:" >
         <div
           ref={workerGlowRef}
           data-worker-full="0"
@@ -398,17 +399,43 @@ useEffect(() => {
             <p ref={workerTextRef} className="text-center text-[11px] text-slate-300 sm:text-xs md:text-sm">
             click the jolly {divname}
               </p>
-              <div className='w-8/10'>
-                <WorkerBar
-                  label='union worker'
-                  enabled={unionWorkers > 0}
-                  workers={unionWorkers}
-                  workerInterval={1000}
-                  onAutoClick={handleWorkerAutoClick}
-                  onProgressChange={handleWorkerProgress}
-                  theme={theme}
-                />
+
+                <div className='w-8/10'>
+                  <WorkerBar
+                    label='union worker'
+                    enabled={unionWorkers > 0}
+                    workers={unionWorkers}
+                    workerInterval={1000}
+                    onAutoClick={handleWorkerAutoClick}
+                    onProgressChange={handleWorkerProgress}
+                    theme={theme}
+                  />
               </div>
+              
+            <div className="flex flex-col items-center gap-3 w-full">
+  <div className="flex w-full max-w-md gap-3">
+    <button
+      type="button"
+      className={`group relative overflow-hidden ${theme.buttonBg} text-sm font-semibold py-3 px-4 rounded-2xl transform transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/50 flex-1 text-center min-w-0`}
+      onClick={() => setSelected('shop')}
+    >
+      <span className="absolute inset-0 bg-gradient-to-br from-white/5 via-white/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+      <span className="relative z-10 flex items-center justify-center gap-2">
+        <span>Shop</span>
+      
+      </span>
+    </button>
+
+    <button
+      type="button"
+      onClick={() => setSelected('updatelog')}
+      className={`group relative overflow-hidden ${theme.buttonBg} text-sm font-semibold py-3 px-4 rounded-2xl transform transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/50 flex-1 text-center min-w-0`}
+    >
+      <span className="absolute inset-0 bg-gradient-to-tr from-white/5 via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+      <span className="relative z-10">Updatelog</span>
+    </button>
+  </div>
+</div>
             </div>
           </div>
 
