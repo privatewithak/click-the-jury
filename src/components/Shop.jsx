@@ -55,7 +55,9 @@ function Shop({
 
 <div className="mt-4 w-[92%] sm:w-full max-w-md mx-auto rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 p-3 flex flex-col gap-2 mb-4 z-2 sm:mt-6 sm:p-4 sm:gap-3 sm:mb-5">
         <h2 className="text-base font-semibold text-center sm:text-lg">shop</h2>
+        <span className={`text-xs ${theme.textSoft} font-mono`}>total clicks: {totalClicks}</span>
         <div className="flex items-center justify-between gap-3 sm:gap-4">
+        
           <div>
             <div className="font-medium">UNION worker</div>
             <div className="text-xs text-slate-300 sm:text-sm">+1 click per second</div>
@@ -92,7 +94,12 @@ function Shop({
                 : 'bg-emerald-500 hover:bg-emerald-400 text-black transition-all cursor-pointer hover:shadow-[0_0_0_1px_rgba(52,211,153,0.6),0_0_25px_rgba(52,211,153,0.8),0_0_60px_rgba(52,211,153,0.4)] shadow-md active:bg-emerald-700 active:shadow-[0_0_0_1px_rgba(15,23,42,0.9),0_0_15px_rgba(15,23,42,0.9)] active:translate-y-[-1px] duration-200 ease-in-out'
               }`}>hire</button>
         </div>
-              <button onClick={() => setSelected('card')} className={`${theme.buttonBg} text-sm font-semibold py-2 px-14 rounded-xl shadow-md transform transition-all duration-250 hover:-translate-y-0.5 active:translate-y-0.5 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/20 flex items-center justify-center mt-3 mx-auto`}>back</button>
+<button 
+  onClick={() => setSelected('card')} 
+  className={`${theme.buttonBg} text-sm font-semibold py-2 px-14 rounded-xl overflow-hidden transform transition-transform duration-250 hover:-translate-y-0.5 active:translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/50 flex items-center justify-center mt-3 mx-auto`}
+>
+  back
+</button>
       </div>
     </>
   )
