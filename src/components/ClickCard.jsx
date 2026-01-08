@@ -413,7 +413,7 @@ useEffect(() => {
               </div>
               
             <div className="flex flex-col items-center gap-3 w-full">
-  <div className="flex w-full max-w-md gap-3">
+  <div className="flex w-full max-w-md gap-3 mt-2 -mb-5">
     <button
       type="button"
       className={`group relative overflow-hidden ${theme.buttonBg} text-sm font-semibold py-3 px-4 rounded-2xl transform transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/50 flex-1 text-center min-w-0`}

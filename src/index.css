@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@plugin 'tailwind-scrollbar';
 
 
 .bg-slate-subtle-grid {
@@ -45,4 +44,29 @@
 }
 .animate-shimmer {
   animation: shimmer 2s infinite linear;
+}
+
+::-webkit-scrollbar {
+    width: 4px;
+    height: 2px;
+}
+
+::-webkit-scrollbar-track {
+    /* Важно: НЕ transparent! Используем фон, совпадающий с основным */
+    background: #0f172a; /* slate-900 — тёмный фон из вашего градиента */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(100, 116, 139, 0.35); /* slate-500 с opacity ~0.35 */
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 116, 139, 0.55);
+}
+
+::-webkit-scrollbar-corner {
+    background: #0f172a;
 }

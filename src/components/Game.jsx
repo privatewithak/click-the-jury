@@ -266,7 +266,7 @@ function Game() {
 
   return (
   
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center pb-28 sm:pb-36 scrollbar-thin">
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-center pb-28 sm:pb-36">
       <div className="mb-8 mx-auto sm:mb-10 md:mb-12">
         <div className="absolute left-1/2 md:top-35 lg:top-8 top-4 transform -translate-x-1/2 flex flex-col items-center z-10 gap-2">
           <AnimatePresence>
