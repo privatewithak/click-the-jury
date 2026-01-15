@@ -36,28 +36,37 @@ function Shop({
     })
   }
 
-  function handleBuyUnionWorker() {
-    const cost = getUnionCost(unionWorkers)
+function handleBuyUnionWorker() {
+  const cost = getUnionCost(unionWorkers)
+
+  if (totalClicks < cost) return
+
+  setTotalClicks(prev => prev - cost)
+  setUnionWorkers(prev => prev + 1)
+}
+
+  const curRefund = unionWorkers > 0 ? Math.floor(getUnionCost(unionWorkers - 1) * 0.25) : 0;
+
+  
+  function sendJURYAfterUNION() {
+    if (unionWorkers <= 0) return;
+
+      const last = getUnionCost(unionWorkers - 1);
+    const refund = Math.floor(last * 0.25);
     
-    setTotalClicks(prev => {
-      if (prev < cost) {
-        return prev
-      }
+    setTotalClicks(prev => prev + refund);
 
-      setUnionWorkers(prevWorkers => prevWorkers + 1)
-      return prev - cost
-    })
-
-    }
-
-  return (
+    setUnionWorkers(prev => Math.max(0, prev - 1));
+  }
+  
+return (
     <>
-
-<div className="mt-4 w-[92%] sm:w-full max-w-md mx-auto rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 p-3 flex flex-col gap-2 mb-4 z-2 sm:mt-6 sm:p-4 sm:gap-3 sm:mb-5">
+      <div className="mt-4 w-[92%] sm:w-full max-w-md mx-auto rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 p-3 flex flex-col gap-2 mb-4 z-2 sm:mt-6 sm:p-4 sm:gap-3 sm:mb-5">
         <h2 className="text-base font-semibold text-center sm:text-lg">shop</h2>
         <span className={`text-xs ${theme.textSoft} font-mono`}>total clicks: {totalClicks}</span>
-        <div className="flex items-center justify-between gap-3 sm:gap-4">
         
+        {/* union worker */}
+        <div className="flex items-center justify-between gap-3 sm:gap-4">
           <div>
             <div className="font-medium">UNION worker</div>
             <div className="text-xs text-slate-300 sm:text-sm">+1 click per second</div>
@@ -68,7 +77,6 @@ function Shop({
               you have: {unionWorkers} unions.
             </div>
           </div>
-
           <button
             onClick={handleBuyUnionWorker}
             disabled={totalClicks < getUnionCost(unionWorkers)}
@@ -81,25 +89,55 @@ function Shop({
             hire
           </button>
         </div>
+        
+        {/* citizen slave */}
         <div className="flex items-center justify-between gap-3 sm:gap-4">
           <div>
-          <div className="font-medium">citizen slave</div>
-          <div className="text-xs text-slate-300 sm:text-sm">+1 power to the click</div>
-          <div className="text-xs text-slate-400 sm:text-sm">current price: {getClickPowerCost(clickPower)} total clicks</div>
+            <div className="font-medium">citizen slave</div>
+            <div className="text-xs text-slate-300 sm:text-sm">+1 power to the click</div>
+            <div className="text-xs text-slate-400 sm:text-sm">current price: {getClickPowerCost(clickPower)} total clicks</div>
             <div className="text-[11px] text-slate-500 sm:text-xs">you have: {clickPower - 1} citizen slaves</div>
           </div>
-           <button onClick={handleBuyClickPower} disabled={totalClicks < getClickPowerCost(clickPower)} className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold w-3/10 sm:px-3 sm:py-2 sm:text-sm
+          <button 
+            onClick={handleBuyClickPower} 
+            disabled={totalClicks < getClickPowerCost(clickPower)} 
+            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold w-3/10 sm:px-3 sm:py-2 sm:text-sm
               ${totalClicks < getClickPowerCost(clickPower)
                 ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
                 : 'bg-emerald-500 hover:bg-emerald-400 text-black transition-all cursor-pointer hover:shadow-[0_0_0_1px_rgba(52,211,153,0.6),0_0_25px_rgba(52,211,153,0.8),0_0_60px_rgba(52,211,153,0.4)] shadow-md active:bg-emerald-700 active:shadow-[0_0_0_1px_rgba(15,23,42,0.9),0_0_15px_rgba(15,23,42,0.9)] active:translate-y-[-1px] duration-200 ease-in-out'
-              }`}>hire</button>
+              }`}
+          >
+            hire
+          </button>
         </div>
-<button 
-  onClick={() => setSelected('card')} 
-  className={`${theme.buttonBg} text-sm font-semibold py-2 px-14 rounded-xl overflow-hidden transform transition-transform duration-250 hover:-translate-y-0.5 active:translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/50 flex items-center justify-center mt-3 mx-auto`}
->
-  back
-</button>
+        
+        {/* sell a union section */}
+        <h3 className="text-base font-semibold text-center sm:text-lg">sell</h3>
+        <div className="flex items-center justify-between gap-3 sm:gap-4">
+          <div>
+            <div className="font-medium">send a JURY after UNION</div>
+            <div className="text-xs text-slate-300 sm:text-sm">-1 union slave with 25% refund</div>
+            <div className="text-xs text-slate-400 sm:text-sm">current refund: {curRefund}</div>
+          </div>
+          <button
+            onClick={sendJURYAfterUNION}
+            disabled={unionWorkers <= 0}
+            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold w-3/10 sm:px-3 sm:py-2 sm:text-sm
+              ${unionWorkers <= 0
+                ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
+                : 'bg-yellow-500 hover:bg-yellow-400 text-black transition-all cursor-pointer hover:shadow-[0_0_0_1px_rgba(234,179,8,0.6),0_0_25px_rgba(234,179,8,0.8),0_0_60px_rgba(234,179,8,0.4)] shadow-md active:bg-yellow-700 active:shadow-[0_0_0_1px_rgba(15,23,42,0.9),0_0_15px_rgba(15,23,42,0.9)] active:translate-y-[-1px] duration-200 ease-in-out'
+              }`}
+          >
+            send
+          </button>
+        </div>
+
+        <button 
+          onClick={() => setSelected('card')} 
+          className={`${theme.buttonBg} text-sm font-semibold py-2 px-14 rounded-xl overflow-hidden transform transition-transform duration-250 hover:-translate-y-0.5 active:translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/50 flex items-center justify-center mt-3 mx-auto`}
+        >
+          back
+        </button>
       </div>
     </>
   )
