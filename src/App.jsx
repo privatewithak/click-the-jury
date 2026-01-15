@@ -6,7 +6,6 @@ function App() {
 
   return (
     <>
-      <Snowfall density={67}/>
       <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-auto bg-slate-subtle-grid text-slate-50 gap-10 md:flex-row">
     <Game />
       </div>

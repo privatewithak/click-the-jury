@@ -397,7 +397,7 @@ useEffect(() => {
             </div>
 
             <p ref={workerTextRef} className="text-center text-[11px] text-slate-300 sm:text-xs md:text-sm">
-            click the jolly {divname}
+            click the {divname}
               </p>
 
                 <div className='w-8/10'>
