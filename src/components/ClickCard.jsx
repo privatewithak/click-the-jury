@@ -348,8 +348,6 @@ const handleClick = useCallback(
         duration: 0.28,
         ease: 'easeInOut',
         times: [0, 0.3, 0.6, 1],
-            damping: 5,
-            stiffness: 300
       }
     })
 
