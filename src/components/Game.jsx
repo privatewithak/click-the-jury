@@ -268,7 +268,7 @@ function Game() {
   
     <div className="relative flex h-screen w-full flex-col items-center justify-center sm:overflow-hidden">
       <div className="mb-8 mx-auto sm:mb-10 md:mb-12">
-        <div className="absolute left-1/2 md:top-10 lg:top-8 top-4 transform -translate-x-1/2 flex flex-col items-center z-10 gap-2">
+        <div className="fixed left-1/2 md:top-10 lg:top-8 top-4 transform -translate-x-1/2 flex flex-col items-center z-50 gap-2">
           <AnimatePresence>
             {combo > 1 && (
               <motion.div
@@ -306,7 +306,7 @@ function Game() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
             transition={{ duration: 0.2 }}
-            className="relative w-full h-full flex flex-col items-center mt-12 sm:mt-16 md:mt-20"
+            className="relative w-full h-full flex flex-col items-center pt-16 sm:pt-20 md:pt-24"
           >
             <ClickCard
               key={current.id}
