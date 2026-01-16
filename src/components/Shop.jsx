@@ -93,7 +93,7 @@ return (
         {/* citizen slave */}
         <div className="flex items-center justify-between gap-3 sm:gap-4">
           <div>
-            <div className="font-medium">citizen slave</div>
+            <div className="font-medium">citizen worker</div>
             <div className="text-xs text-slate-300 sm:text-sm">+1 power to the click</div>
             <div className="text-xs text-slate-400 sm:text-sm">current price: {getClickPowerCost(clickPower)} total clicks</div>
             <div className="text-[11px] text-slate-500 sm:text-xs">you have: {clickPower - 1} citizen slaves</div>
