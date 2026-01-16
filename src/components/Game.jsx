@@ -266,9 +266,9 @@ function Game() {
 
   return (
   
-    <div className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden">
+    <div className="relative flex h-screen w-full flex-col items-center justify-center sm:overflow-hidden">
       <div className="mb-8 mx-auto sm:mb-10 md:mb-12">
-        <div className="absolute left-1/2 md:top-35 lg:top-8 top-4 transform -translate-x-1/2 flex flex-col items-center z-10 gap-2">
+        <div className="absolute left-1/2 md:top-10 lg:top-8 top-4 transform -translate-x-1/2 flex flex-col items-center z-10 gap-2">
           <AnimatePresence>
             {combo > 1 && (
               <motion.div
