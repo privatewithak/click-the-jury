@@ -7,7 +7,7 @@ import {
   useState,
 } from 'react';
 // eslint-disable-next-line no-unused-vars
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform, useAnimation } from 'framer-motion';
 import { CARD_THEMES } from './cardthemes';
 import WorkerBar from './WorkerBar';
 
@@ -192,6 +192,7 @@ function ClickCard({
   const [workerPulseKey, setWorkerPulseKey] = useState(0);
   const workerTextRef = useRef(null);
 
+  const imageStretch = useAnimation()
 
 
   // sync motion value when logical progress changes
@@ -338,10 +339,24 @@ const handleClick = useCallback(
       particlesCanvasRef.current.emitBurstAtClientPosition(baseX, baseY);
     }
 
+    // stretch anim
+    imageStretch.start({
+      scaleX: [1, 1.18, 0.92, 1],
+      scaleY: [1, 0.92, 1.1, 1],
+      
+      transition: {
+        duration: 0.28,
+        ease: 'easeInOut',
+        times: [0, 0.3, 0.6, 1],
+            damping: 5,
+            stiffness: 300
+      }
+    })
+
     onClick();
     playClickSound();
   },
-  [playClickSound, onClick]
+  [playClickSound, onClick, imageStretch]
 );
 
   
@@ -388,10 +403,12 @@ useEffect(() => {
               onClick={handleClick}
             >
               <div className={`absolute inset-0 rounded-[2rem] border ${theme.border} bg-slate-900/70 ${theme.cardHalo}`} />
-              <img
+              <motion.img
                 src={image}
                 alt="meme"
-                className="relative z-10 h-[85%] w-[85%] rounded-[2rem] object-cover transition-transform duration-150 ease-out hover:scale-[1.03]"
+                  className="relative z-10 h-[85%] w-[85%] rounded-[2rem] object-cover duration-150"
+                  initial={{ scaleX: 1, scaleY: 1 }}
+                  animate={imageStretch}
               />
               <div className="pointer-events-none absolute inset-0 rounded-[2rem] bg-gradient-to-t from-black/60 via-transparent to-white/10" />
             </div>
