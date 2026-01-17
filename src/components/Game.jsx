@@ -172,7 +172,7 @@ function Game() {
 
     const handleCrit = () => {
       const random = Math.random();
-      if (random < 0.034) { // 3.4% chance
+      if (random < 0.034) {
         return critFrenzy();
       }
       return false;
