@@ -1,3 +1,5 @@
+import type { Dispatch, SetStateAction } from 'react';
+
 interface ShopProps {
   totalClicks: number;
   unionWorkers: number;
@@ -5,7 +7,7 @@ interface ShopProps {
   setTotalClicks: React.Dispatch<React.SetStateAction<number>>;
   setUnionWorkers: React.Dispatch<React.SetStateAction<number>>;
   setClickPower: React.Dispatch<React.SetStateAction<number>>;
-  setSelected: (s: string) => void;
+  setSelected: Dispatch<SetStateAction<string>>;
   theme?: Record<string, string>;
 }
 

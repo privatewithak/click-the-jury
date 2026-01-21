@@ -5,6 +5,8 @@ import {
   forwardRef,
   useImperativeHandle,
   useState,
+  type Dispatch,
+  type SetStateAction,
 } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, useAnimation } from 'framer-motion';
 import WorkerBar from './WorkerBar';
@@ -19,13 +21,13 @@ interface ClickCardProps {
   clicks: number;
   totalClicks: number;
   theme?: Record<string, string>;
-  onAutoClick?: (workers: number) => void;
+  onAutoClick?: (_count: number) => void;
   unionWorkers?: number;
-  setSelected: (s: string) => void;
+  setSelected: Dispatch<SetStateAction<string>>;
 }
 
 interface ParticlesHandle {
-  emitBurstAtClientPosition: (clientX: number, clientY: number) => void;
+  emitBurstAtClientPosition: (x: number, y: number) => void;
 }
 
 const PARTICLES_PER_CLICK = 22;

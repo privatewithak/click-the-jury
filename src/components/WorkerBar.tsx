@@ -5,10 +5,10 @@ interface WorkerBarProps {
   enabled?: boolean;
   workers?: number;
   workerInterval?: number;
-  onAutoClick?: (workers: number) => void;
+  onAutoClick?: (_count: number) => void;
   label?: string;
   theme?: Record<string, string>;
-  onProgressChange?: (value: number, isFull?: boolean) => void;
+  onProgressChange?: (_progress: number, _isFull?: boolean) => void;
 }
 
 export default function WorkerBar({
