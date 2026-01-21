@@ -31,4 +31,4 @@
 - ~progression~
 - ~animations~
 - ~combos~
-- (sound, particles, crit frenzy implemented)
+- (sound, particles, crit frenzy implemented) 
