@@ -1,4 +1,16 @@
-export const CARD_THEMES: Record<string, Record<string, string>> = {
+export type CardTheme = {
+  cardHalo: string;
+  border: string;
+  textAccent: string;
+  textSoft: string;
+  progressFill: string;
+  progressTrack: string;
+  progressDot: string;
+  chipBg: string;
+  buttonBg: string;
+};
+
+export const CARD_THEMES: Record<string, CardTheme> = {
   slate: {
     cardHalo: "border-slate-400/40 shadow-[0_0_60px_rgba(148,163,184,0.45)]",
     border: "border-slate-400/70",

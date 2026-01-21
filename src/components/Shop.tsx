@@ -8,7 +8,7 @@ interface ShopProps {
   setUnionWorkers: React.Dispatch<React.SetStateAction<number>>;
   setClickPower: React.Dispatch<React.SetStateAction<number>>;
   setSelected: Dispatch<SetStateAction<string>>;
-  theme?: Record<string, string>;
+  theme?: Partial<import("./cardthemes").CardTheme>;
 }
 
 function Shop({

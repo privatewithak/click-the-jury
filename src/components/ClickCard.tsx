@@ -20,7 +20,7 @@ interface ClickCardProps {
   onClick: () => void;
   clicks: number;
   totalClicks: number;
-  theme?: Record<string, string>;
+  theme?: Partial<import("./cardthemes").CardTheme>;
   onAutoClick?: (_count: number) => void;
   unionWorkers?: number;
   setSelected: Dispatch<SetStateAction<string>>;

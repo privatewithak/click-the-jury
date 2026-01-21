@@ -1,11 +1,9 @@
 import React from 'react';
 import GithubLogo from '../assets/github.svg';
+import type { CardTheme } from './cardthemes';
 
 type UpdatelogProps = {
-  theme: {
-    textSoft: string;
-    buttonBg: string;
-  };
+  theme: CardTheme;
   setSelected: React.Dispatch<React.SetStateAction<string>>;
 };
 

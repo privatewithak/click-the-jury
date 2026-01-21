@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react"
 import ClickCard from "./ClickCard";
 import { AnimatePresence, motion } from "framer-motion";
-import { CARD_THEMES } from "./cardthemes";
+import { CARD_THEMES, type CardTheme } from "./cardthemes";
 import Shop from "./Shop.tsx";
 const SAVE_KEY = 'jury-clicker-progress-v1';
 import { level } from './levels.ts'
@@ -106,7 +106,7 @@ function Game() {
 
 
   const current = levels[currentLevel]
-  const theme = CARD_THEMES[current.theme] ?? ({} as Record<string, string>);
+  const theme: CardTheme = CARD_THEMES[current.theme] ?? CARD_THEMES.slate;
   
   useEffect(() => {
     return () => {
