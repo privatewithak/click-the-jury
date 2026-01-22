@@ -49,7 +49,7 @@ function Game() {
     const now = Date.now();
     const critActive = critEndsAtRef.current > now;
     
-    if (!critActive && Math.random() < 0.009) {
+    if (!critActive && Math.random() < 0.003) {
       critFrenzy();
     }
 
