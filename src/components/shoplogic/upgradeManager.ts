@@ -31,13 +31,20 @@ export function getClickPower(state: GameState): number {
 
 export function getTotalCPS(state: GameState): number {
     let cps = 0;
+
+    const hasMultiplier = state.upgrades['sixSevenLord'] > 0;
+    const multiplierCfg = getUpgradeConfig('sixSevenLord');
+    const autoclickMultiplier = hasMultiplier && multiplierCfg ? multiplierCfg.effectValue : 1;
+
+
     for (const id in state.upgrades) {
         const cfg = getUpgradeConfig(id);
         if (!cfg) continue;
         const count = state.upgrades[id] || 0;
         if (cfg.effectType === 'autoclick') {
+
             cps += cfg.effectValue * count;
         }
     }
-    return cps;
+    return cps * autoclickMultiplier;
 }

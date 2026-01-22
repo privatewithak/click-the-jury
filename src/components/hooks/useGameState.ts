@@ -2,6 +2,48 @@ import { useReducer, useEffect, useRef } from 'react';
 import { calculateCost, getTotalCPS, getClickPower, getUpgradeConfig } from '../shoplogic/upgradeManager';
 import { level as initialLevels, type LevelItem } from '../levels';
 
+function sanitizeLevels(maybeLevels: any[] | undefined): LevelItem[] {
+ 
+  return initialLevels.map((base, idx) => {
+    const s = (maybeLevels && maybeLevels[idx]) || {};
+    return {
+      ...base,
+      
+      currentClicks: typeof s.currentClicks === 'number' ? s.currentClicks : (base.currentClicks ?? 0),
+      
+      unlocked: typeof s.unlocked === 'boolean' ? s.unlocked : !!base.unlocked || idx === 0,
+
+      image: typeof s.image === 'string' ? s.image : base.image,
+      sound: typeof s.sound === 'string' ? s.sound : base.sound,
+     
+      clicksNeeded: typeof s.clicksNeeded === 'number' ? s.clicksNeeded : base.clicksNeeded,
+     
+    } as LevelItem;
+  });
+}
+
+function sanitizeUpgrades(maybeUpgrades: any): UpgradesMap {
+  if (!maybeUpgrades || typeof maybeUpgrades !== 'object') return {};
+  const out: UpgradesMap = {};
+  for (const k of Object.keys(maybeUpgrades)) {
+    const v = maybeUpgrades[k];
+    out[k] = typeof v === 'number' && !Number.isNaN(v) ? Math.max(0, Math.floor(v)) : 0;
+  }
+  return out;
+}
+
+function sanitizeState(raw: any): GameState {
+  return {
+    totalClicks: typeof raw.totalClicks === 'number' ? raw.totalClicks : 0,
+    currentLevel: typeof raw.currentLevel === 'number' ? raw.currentLevel : 0,
+    accumulator: 0,
+    levels: sanitizeLevels(raw.levels),
+    upgrades: sanitizeUpgrades(raw.upgrades),
+  };
+}
+
+
+
 export type UpgradesMap = Record<string, number>;
 
 export interface GameState {
@@ -118,12 +160,10 @@ function reducer(state: GameState, action: Action): GameState {
         upgrades: { ...state.upgrades, [action.id]: curCount - 1 }
       };
     }
-    case 'LOAD_SAVE':
-      return { 
-        ...action.state, 
-        accumulator: 0,
-        levels: action.state.levels || initialLevels 
-      };
+case 'LOAD_SAVE': {
+  const safe = sanitizeState(action.state);
+  return { ...safe, accumulator: 0 };
+}
     case 'AUTO_CLICK': 
       return updateProgress(state, action.amount);
     default:
@@ -141,38 +181,38 @@ export default function useGameState() {
 
 
   useEffect(() => {
-    const v2Save = localStorage.getItem(SAVE_KEY_V2);
-    if (v2Save) {
+  const v2Save = localStorage.getItem(SAVE_KEY_V2);
+  if (v2Save) {
+    try {
+      const parsed = JSON.parse(v2Save);
+      const safe = sanitizeState(parsed);
+      dispatch({ type: 'LOAD_SAVE', state: safe });
+    } catch (e) {
+      console.error("Failed to parse v2 save", e);
+      localStorage.removeItem(SAVE_KEY_V2);
+    }
+  } else {
+    const v1Save = localStorage.getItem(SAVE_KEY_V1);
+    if (v1Save) {
       try {
-        const parsed = JSON.parse(v2Save);
-        dispatch({ type: 'LOAD_SAVE', state: parsed });
-      } catch (e) { 
-        console.error("Failed to parse v2 save", e);
-        localStorage.removeItem(SAVE_KEY_V2);
-      }
-    } else {
-      const v1Save = localStorage.getItem(SAVE_KEY_V1);
-      if (v1Save) {
-        try {
-          const old = JSON.parse(v1Save);
-          const migrated: GameState = {
-            totalClicks: old.totalClicks || 0,
-            currentLevel: old.currentLevel || 0,
-            levels: old.levels || initialLevels,
-            accumulator: 0,
-            upgrades: {
-              union: old.unionWorkers || 0,
-              clickPower: Math.max(0, (old.clickPower || 1) - 1),
-            },
-          };
-          dispatch({ type: 'LOAD_SAVE', state: migrated });
-          localStorage.removeItem(SAVE_KEY_V1);
-        } catch (e) { 
-          console.error("Migration failed", e);
-        }
+        const old = JSON.parse(v1Save);
+        const migrated: GameState = sanitizeState({
+          totalClicks: old.totalClicks || 0,
+          currentLevel: old.currentLevel || 0,
+          levels: old.levels || initialLevels,
+          upgrades: {
+            union: old.unionWorkers || 0,
+            clickPower: Math.max(0, (old.clickPower || 1) - 1),
+          }
+        });
+        dispatch({ type: 'LOAD_SAVE', state: migrated });
+        localStorage.removeItem(SAVE_KEY_V1);
+      } catch (e) {
+        console.error("Migration failed", e);
       }
     }
-  }, []);
+  }
+}, []);
 
  
   useEffect(() => {

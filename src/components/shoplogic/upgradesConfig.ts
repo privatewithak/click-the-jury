@@ -51,6 +51,15 @@ const ONETIME_UPGRADES: Record<string, Upgrade> = {
         effectType: 'passive',
         effectValue: 1.2,
     },
+    sixSevenLord: {
+        id: 'sixSevenLord',
+        label: "benefactor's guidance",
+        subLabel: '1.5x to all autoclicks',
+        baseCost: 7000,
+        multiplier: 1,
+        effectType: 'passive',
+        effectValue: 1.5,
+    }
 };
 
 export default {
