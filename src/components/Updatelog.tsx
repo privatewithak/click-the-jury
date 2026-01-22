@@ -9,9 +9,9 @@ type UpdatelogProps = {
 
 export default function Updatelog({ theme, setSelected }: UpdatelogProps) {
   return (
-    <div className='relative p-3 mb-3 mt-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl text-xs max-h-64 w-[92%] sm:w-full max-w-md z-2 mx-auto sm:p-4 sm:mb-4 sm:mt-12 sm:text-sm'>
+    <div className='relative p-3 mb-3 mt-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl text-xs min-h-64 w-[92%] sm:w-full max-w-md z-2 mx-auto sm:p-4 sm:mb-4 sm:mt-12 sm:text-sm'>
           <h2 className="text-base font-semibold font-mono sm:text-lg">update log</h2>
-          <p className={`mb-2 ${theme.textSoft}`}>29.12.2025 v.1.2</p>
+          <p className={`mb-2 ${theme.textSoft}`}>22.01.2026 v1.3</p>
       <ul className="list-disc list-inside space-y-1">
         <li>v1.3 - rewrite to typescript, overhaul game state and add one-time upgrades</li>
         <li>v1.2 - crit frenzy & two new cards</li>
