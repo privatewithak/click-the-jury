@@ -13,6 +13,7 @@ export default function Updatelog({ theme, setSelected }: UpdatelogProps) {
           <h2 className="text-base font-semibold font-mono sm:text-lg">update log</h2>
           <p className={`mb-2 ${theme.textSoft}`}>29.12.2025 v.1.2</p>
       <ul className="list-disc list-inside space-y-1">
+        <li>v1.3 - rewrite to typescript, overhaul game state and add one-time upgrades</li>
         <li>v1.2 - crit frenzy & two new cards</li>
         <li>v1.1 - new cards & combo</li>
         <li>v1.0 - release</li>
