@@ -1,160 +1,113 @@
 import type { Dispatch, SetStateAction } from 'react';
+import UPGRADES from './shoplogic/upgradesConfig';
+import { calculateCost } from './shoplogic/upgradeManager';
+import { type GameState } from './hooks/useGameState';
 
 interface ShopProps {
-  totalClicks: number;
-  unionWorkers: number;
-  clickPower: number;
-  setTotalClicks: React.Dispatch<React.SetStateAction<number>>;
-  setUnionWorkers: React.Dispatch<React.SetStateAction<number>>;
-  setClickPower: React.Dispatch<React.SetStateAction<number>>;
+  state: GameState;
+  dispatch: Dispatch<any>;
   setSelected: Dispatch<SetStateAction<string>>;
   theme?: Partial<import("./cardthemes").CardTheme>;
 }
 
-function Shop({
-  totalClicks,
-  unionWorkers,
-  clickPower,
-  setTotalClicks,
-  setUnionWorkers,
-  setClickPower,
-  setSelected,
-  theme
-}: ShopProps) {
-  const UNION_BASE_COST = 50
-  const UNION_COST_MULT = 1.2
-
-  function getUnionCost(count: number) {
-    return Math.floor(UNION_BASE_COST * Math.pow(UNION_COST_MULT, count))
-  }
-
-  const CLICK_POWER_BASE_COST = 20
-  const CLICK_POWER_COST_MULT = 1.3
-
-  function getClickPowerCost(clickPower: number) {
-    const level = clickPower - 1
-    return Math.floor(CLICK_POWER_BASE_COST * Math.pow(CLICK_POWER_COST_MULT, level))
-  }
-
-  function handleBuyClickPower() {
-    const cost = getClickPowerCost(clickPower)
-
-    setTotalClicks(prev => {
-      if (prev < cost) {
-        return prev
-      }
-
-      setClickPower(prevPower => prevPower + 1)
-      return prev - cost
-    })
-  }
-
-function handleBuyUnionWorker() {
-  const cost = getUnionCost(unionWorkers)
-
-  if (totalClicks < cost) return
-
-  setTotalClicks(prev => prev - cost)
-  setUnionWorkers(prev => prev + 1)
-}
-
-  const curRefund = unionWorkers > 0 ? Math.floor(getUnionCost(unionWorkers - 1) * 0.25) : 0;
-
+function Shop({ state, dispatch, setSelected, theme }: ShopProps) {
   const t = theme ?? ({} as Record<string, string>);
+
+
   
-  function sendJURYAfterUNION() {
-    if (unionWorkers <= 0) return;
 
-      const last = getUnionCost(unionWorkers - 1);
-    const refund = Math.floor(last * 0.25);
-    
-    setTotalClicks(prev => prev + refund);
+  return (
+    <div className="mt-4 w-[92%] sm:w-full max-w-md mx-auto rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 p-3 flex flex-col gap-2 mb-4 z-2 sm:mt-6 sm:p-4 sm:gap-3 sm:mb-5 overflow-y-auto max-h-[80vh]">
+      <h2 className="text-base font-semibold text-center sm:text-lg">shop</h2>
+      <span className={`text-xs ${t.textSoft ?? ''} font-mono mb-2`}>
+        total clicks: {Math.floor(state.totalClicks)}
+      </span>
 
-    setUnionWorkers(prev => Math.max(0, prev - 1));
-  }
-  
-return (
-    <>
-      <div className="mt-4 w-[92%] sm:w-full max-w-md mx-auto rounded-2xl border border-white/10 backdrop-blur-xl bg-white/5 p-3 flex flex-col gap-2 mb-4 z-2 sm:mt-6 sm:p-4 sm:gap-3 sm:mb-5">
-        <h2 className="text-base font-semibold text-center sm:text-lg">shop</h2>
-        <span className={`text-xs ${t.textSoft ?? ''} font-mono`}>total clicks: {totalClicks}</span>
-        
-        {/* union worker */}
-        <div className="flex items-center justify-between gap-3 sm:gap-4">
-          <div>
-            <div className="font-medium">UNION worker</div>
-            <div className="text-xs text-slate-300 sm:text-sm">+1 click per second</div>
-            <div className="text-xs text-slate-400 sm:text-sm">
-              current price: {getUnionCost(unionWorkers)} total clicks
+      {Object.values(UPGRADES).filter((cfg) => cfg.effectType !== 'passive').map((cfg) => {
+        const count = state.upgrades[cfg.id] || 0;
+        const cost = calculateCost(cfg, count);
+        const canAfford = state.totalClicks >= cost;
+        const isOneTime = cfg.effectType === 'passive';
+        const isMaxed = isOneTime && (state.upgrades[cfg.id] || 0) >= 1;
+
+        return (
+          <div key={cfg.id} className="flex items-center justify-between gap-3 sm:gap-4 border-b border-white/5 pb-2">
+            <div>
+              <div className="font-medium">{cfg.label}</div>
+              <div className="text-xs text-slate-300 sm:text-sm">{cfg.subLabel}</div>
+              <div className="text-xs text-slate-400 sm:text-sm">price: {cost} clicks</div>
+              <div className="text-[11px] text-slate-500 sm:text-xs">owned: {count}</div>
             </div>
-            <div className="text-[11px] text-slate-500 sm:text-xs">
-              you have: {unionWorkers} unions.
-            </div>
+            <button
+              onClick={() => dispatch({ type: 'BUY_UPGRADE', id: cfg.id })}
+              disabled={!canAfford || isMaxed}
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold w-3/10 sm:text-sm transition-all
+                ${!canAfford 
+                  ? 'bg-slate-700 text-slate-400 cursor-not-allowed' 
+                  : 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-md active:scale-95 hover:shadow-[0_0_0_1px_rgba(52,211,153,0.6),0_0_25px_rgba(52,211,153,0.8),0_0_60px_rgba(52,211,153,0.4)]'}`}
+            >
+              hire
+            </button>
           </div>
-          <button
-            onClick={handleBuyUnionWorker}
-            disabled={totalClicks < getUnionCost(unionWorkers)}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold w-3/10 sm:px-3 sm:py-2 sm:text-sm
-              ${totalClicks < getUnionCost(unionWorkers)
-                ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
-                : 'bg-emerald-500 hover:bg-emerald-400 text-black transition-all cursor-pointer hover:shadow-[0_0_0_1px_rgba(52,211,153,0.6),0_0_25px_rgba(52,211,153,0.8),0_0_60px_rgba(52,211,153,0.4)] shadow-md active:bg-emerald-700 active:shadow-[0_0_0_1px_rgba(15,23,42,0.9),0_0_15px_rgba(15,23,42,0.9)] active:translate-y-[-1px] duration-200 ease-in-out'
-              }`}
-          >
-            hire
-          </button>
-        </div>
-        
-        {/* citizen slave */}
-        <div className="flex items-center justify-between gap-3 sm:gap-4">
-          <div>
-            <div className="font-medium">citizen worker</div>
-            <div className="text-xs text-slate-300 sm:text-sm">+1 power to the click</div>
-            <div className="text-xs text-slate-400 sm:text-sm">current price: {getClickPowerCost(clickPower)} total clicks</div>
-            <div className="text-[11px] text-slate-500 sm:text-xs">you have: {clickPower - 1} citizen slaves</div>
-          </div>
-          <button 
-            onClick={handleBuyClickPower} 
-            disabled={totalClicks < getClickPowerCost(clickPower)} 
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold w-3/10 sm:px-3 sm:py-2 sm:text-sm
-              ${totalClicks < getClickPowerCost(clickPower)
-                ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
-                : 'bg-emerald-500 hover:bg-emerald-400 text-black transition-all cursor-pointer hover:shadow-[0_0_0_1px_rgba(52,211,153,0.6),0_0_25px_rgba(52,211,153,0.8),0_0_60px_rgba(52,211,153,0.4)] shadow-md active:bg-emerald-700 active:shadow-[0_0_0_1px_rgba(15,23,42,0.9),0_0_15px_rgba(15,23,42,0.9)] active:translate-y-[-1px] duration-200 ease-in-out'
-              }`}
-          >
-            hire
-          </button>
-        </div>
-        
-        {/* sell a union section */}
-        <h3 className="text-base font-semibold text-center sm:text-lg">sell</h3>
-        <div className="flex items-center justify-between gap-3 sm:gap-4">
-          <div>
-            <div className="font-medium">send a JURY after UNION</div>
-            <div className="text-xs text-slate-300 sm:text-sm">-1 union slave with 25% refund</div>
-            <div className="text-xs text-slate-400 sm:text-sm">current refund: {curRefund}</div>
-          </div>
-          <button
-            onClick={sendJURYAfterUNION}
-            disabled={unionWorkers <= 0}
-            className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold w-3/10 sm:px-3 sm:py-2 sm:text-sm
-              ${unionWorkers <= 0
-                ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
-                : 'bg-yellow-500 hover:bg-yellow-400 text-black transition-all cursor-pointer hover:shadow-[0_0_0_1px_rgba(234,179,8,0.6),0_0_25px_rgba(234,179,8,0.8),0_0_60px_rgba(234,179,8,0.4)] shadow-md active:bg-yellow-700 active:shadow-[0_0_0_1px_rgba(15,23,42,0.9),0_0_15px_rgba(15,23,42,0.9)] active:translate-y-[-1px] duration-200 ease-in-out'
-              }`}
-          >
-            send
-          </button>
-        </div>
+        );
+      })}
+      <h3 className="text-base font-semibold text-center sm:text-lg mt-4">special</h3>
+      {Object.values(UPGRADES).filter((cfg) => cfg.effectType === 'passive').map((cfg) => {
+        const count = state.upgrades[cfg.id] || 0;
+        const cost = calculateCost(cfg, count);
+        const canAfford = state.totalClicks >= cost;
+        const isOneTime = cfg.effectType === 'passive';
+        const isMaxed = isOneTime && (state.upgrades[cfg.id] || 0) >= 1;
 
-        <button 
-          onClick={() => setSelected('card')} 
-          className={`${t.buttonBg ?? ''} text-sm font-semibold py-2 px-14 rounded-xl overflow-hidden transform transition-transform duration-250 hover:-translate-y-0.5 active:translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white/50 flex items-center justify-center mt-3 mx-auto`}
+        return (
+          <div key={cfg.id} className="flex items-center justify-between gap-3 sm:gap-4 border-b border-white/5 pb-2">
+            <div>
+              <div className="font-medium">{cfg.label}</div>
+              <div className="text-xs text-slate-300 sm:text-sm">{cfg.subLabel}</div>
+              <div className="text-xs text-slate-400 sm:text-sm">price: {cost} clicks</div>
+              <div className="text-[11px] text-slate-500 sm:text-xs">owned: {count}</div>
+            </div>
+            <button
+              onClick={() => dispatch({ type: 'BUY_UPGRADE', id: cfg.id })}
+              disabled={count > 1}
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold w-3/10 sm:text-sm transition-all
+                ${isMaxed || !canAfford
+                  ? 'bg-slate-700 text-slate-400 cursor-not-allowed' 
+                  : 'bg-emerald-500 hover:bg-emerald-400 text-black shadow-md active:scale-95 hover:shadow-[0_0_0_1px_rgba(52,211,153,0.6),0_0_25px_rgba(52,211,153,0.8),0_0_60px_rgba(52,211,153,0.4)]'}`}
+            >
+              hire
+            </button>
+          </div>
+        );
+      })}
+
+      
+      <h3 className="text-base font-semibold text-center sm:text-lg mt-2">sell</h3>
+      <div className="flex items-center justify-between gap-3 sm:gap-4">
+        <div>
+          <div className="font-medium">send a JURY after UNION</div>
+          <div className="text-xs text-slate-300 sm:text-sm">-1 union worker (25% refund)</div>
+        </div>
+        <button
+          onClick={() => dispatch({ type: 'SELL_UPGRADE', id: 'union' })}
+          disabled={(state.upgrades['union'] || 0) <= 0}
+          className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold w-3/10 hover:shadow-[0_0_0_1px_rgba(234,179,8,0.6),0_0_25px_rgba(234,179,8,0.8),0_0_60px_rgba(234,179,8,0.4)] sm:text-sm transition-all
+            ${(state.upgrades['union'] || 0) <= 0
+              ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
+              : 'bg-yellow-500 hover:bg-yellow-400 text-black active:scale-95'}`}
         >
-          back
+          send
         </button>
       </div>
-    </>
-  )
+
+      <button 
+        onClick={() => setSelected('card')} 
+        className={`${t.buttonBg ?? ''} text-sm font-semibold py-2 px-14 rounded-xl mt-4 mx-auto transition-transform hover:-translate-y-0.5 overflow-hidden`}
+      >
+        back
+      </button>
+    </div>
+  );
 }
 
 export default Shop;

@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, useAnimation } from 'framer-motion';
 import WorkerBar from './WorkerBar';
+import useGameState from './hooks/useGameState';
 
 interface ClickCardProps {
   image: string;
@@ -208,6 +209,10 @@ function ClickCard({
   const audioBufferRef = useRef<AudioBuffer | null>(null);
   const loadingRef = useRef<boolean>(false);
 
+  const { state, dispatch } = useGameState();
+  const handleAutoClick = useCallback((amount: number) => {
+  dispatch({ type: 'AUTO_CLICK', amount });
+}, [dispatch]);
   // ref for particle emitter
   const particlesCanvasRef = useRef<ParticlesHandle | null>(null);
 
@@ -409,7 +414,7 @@ useEffect(() => {
   } as unknown) as React.CSSProperties; 
 
   const t = theme ?? ({} as Record<string, string>);
-  const workersCount = unionWorkers ?? 0;
+  const workersCount = unionWorkers ?? state.upgrades.union ?? 0;
 
   if (!unlocked) return null;
     
@@ -458,15 +463,15 @@ useEffect(() => {
               </p>
 
                 <div className='w-8/10'>
-                  <WorkerBar
-                    label='union worker'
-                    enabled={workersCount > 0}
-                    workers={workersCount}
-                    workerInterval={1000}
-                    onAutoClick={handleWorkerAutoClick}
-                    onProgressChange={handleWorkerProgress}
-                    theme={theme}
-                  />
+            <WorkerBar 
+              enabled={workersCount > 0}
+              workers={workersCount}
+              workerInterval={1100}
+              onAutoClick={handleAutoClick}
+                  onProgressChange={handleWorkerProgress}
+                  theme={theme}
+            />
+                 
               </div>
               
             <div className="flex flex-col items-center gap-3 w-full">

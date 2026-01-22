@@ -1,77 +1,72 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CARD_THEMES } from './cardthemes';
 
 interface WorkerBarProps {
   enabled?: boolean;
   workers?: number;
-  workerInterval?: number;
-  onAutoClick?: (_count: number) => void;
   label?: string;
   theme?: Record<string, string>;
-  onProgressChange?: (_progress: number, _isFull?: boolean) => void;
+  workerInterval: number;
+  onAutoClick: (count: number) => void;
+  onProgressChange?: (progress: number, isFull: boolean) => void; // ЭТО НУЖНО ДЛЯ АНИМАЦИИ В ClickCard
 }
 
 export default function WorkerBar({
-    enabled = false,
-    workers = 0,
-    workerInterval = 1000,
-    onAutoClick,
-    label = 'union workers',
-    theme,
-    onProgressChange,
+  enabled = false,
+  workers = 0,
+  label = 'union workers',
+  theme,
+  workerInterval,
+  onAutoClick,
+  onProgressChange,
 }: WorkerBarProps) {
-    const rafRef = useRef<number | null>(null);
-    const startRef = useRef<number | null>(null)
+  const rafRef = useRef<number | null>(null);
+  const startRef = useRef<number | null>(null);
+  const [progress, setProgress] = useState(0);
+  const activeTheme = theme ?? CARD_THEMES.slate;
 
-    const [progress, setProgress] = useState(0);
-    const activeTheme = theme ?? CARD_THEMES.slate;
+  useEffect(() => {
+    if (!enabled || workers <= 0 || workerInterval <= 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setProgress(0);
+      onProgressChange?.(0, false);
+      return;
+    }
 
-    useEffect(() => {
-        if (!enabled || workers <= 0 || workerInterval <= 0) {
-            // avoid calling setState synchronously inside effect
-            setTimeout(() => {
-                setProgress(0);
-                if (typeof onProgressChange === 'function') {
-                    onProgressChange(0, false);
-                }
-            }, 0);
-            return;
-        }
-        startRef.current = null;
+    startRef.current = null;
 
-        const step = (t: number) => {
-            if (startRef.current === null) startRef.current = t;
+    const step = (t: number) => {
+      if (startRef.current === null) startRef.current = t;
+      
+      const elapsed = t - startRef.current;
+      const p = Math.min(elapsed / workerInterval, 1);
+      const isFull = p >= 1;
 
-            const elapsed = t - (startRef.current ?? 0);
-            const p = Math.min(elapsed / workerInterval, 1);
-            const isFull = elapsed >= workerInterval;
+      setProgress(p);
+      onProgressChange?.(p, isFull); // ОБЯЗАТЕЛЬНО ВЫЗЫВАТЬ ДЛЯ АНИМАЦИИ
 
-            if (isFull) {
-                startRef.current = t;
+      if (isFull) {
+        onAutoClick(workers);
+        // Сбрасываем прогресс только после клика
+        startRef.current = t;
+        setProgress(0);
+        onProgressChange?.(0, true); // Сбрасываем анимацию
+      }
 
-                if (typeof onAutoClick === 'function') {
-                    onAutoClick(workers);
-                }
-            }
-            setProgress(p)
-            if (typeof onProgressChange === 'function') {
-                onProgressChange(p, isFull);
-            }
-            rafRef.current = requestAnimationFrame(step);
+      rafRef.current = requestAnimationFrame(step);
+    };
 
-        }
+    rafRef.current = requestAnimationFrame(step);
+    
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [enabled, workers, workerInterval, onAutoClick, onProgressChange]);
 
-        rafRef.current = requestAnimationFrame(step);
-        return () => {
-          if (rafRef.current) cancelAnimationFrame(rafRef.current);
-        };
-
-    }, [enabled, workers, workerInterval, onAutoClick, onProgressChange]);
-
-    const clampedProgress = Math.min(Math.max(progress, 0), 1);
-    const progressPercent = clampedProgress * 100;
-    const pct = Math.round(progressPercent);
-    const isFull = pct === 100;
+  const clampedProgress = Math.min(Math.max(progress, 0), 1);
+  const progressPercent = clampedProgress * 100;
+  const pct = Math.round(progressPercent);
+  const isFull = clampedProgress >= 1;
 
   return (
     <div className="w-full mt-3 select-none">
@@ -86,13 +81,15 @@ export default function WorkerBar({
       >
         <div
           className={`absolute inset-0 left-0 rounded-full ${activeTheme.progressFill}`}
-          style={{ transform: `scaleX(${clampedProgress})`, transformOrigin: "left center" }}
+          style={{ 
+            transform: `scaleX(${clampedProgress})`,
+            transformOrigin: "left center"
+          }}
         />
         <div
           className="absolute inset-0"
           style={{
-            background:
-              "linear-gradient(90deg, rgba(255,255,255,0.00), rgba(255,255,255,0.12), rgba(255,255,255,0.00))",
+            background: "linear-gradient(90deg, rgba(255,255,255,0.00), rgba(255,255,255,0.12), rgba(255,255,255,0.00))",
             transform: `translateX(${(clampedProgress * 100) - 50}%)`,
             opacity: 0.25,
             pointerEvents: "none",
@@ -101,5 +98,4 @@ export default function WorkerBar({
       </div>
     </div>
   );
-
 }
