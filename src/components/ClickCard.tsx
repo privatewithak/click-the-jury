@@ -200,7 +200,6 @@ function ClickCard({
   clicks,
   totalClicks,
   theme,
-  onAutoClick,
   unionWorkers,
   setSelected,
 }: ClickCardProps) {
@@ -226,6 +225,7 @@ function ClickCard({
   const [isPulse, setIsPulse] = useState(false);
   const progressBarRef = useRef<HTMLDivElement | null>(null);
   const workerGlowRef = useRef<HTMLDivElement | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [workerPulseKey, setWorkerPulseKey] = useState(0);
   const workerTextRef = useRef<HTMLParagraphElement | null>(null);
 
@@ -297,12 +297,7 @@ function ClickCard({
     };
   }, []);
 
-  const handleWorkerAutoClick = useCallback((workers: number) => {
-    if (typeof onAutoClick === 'function') {
-      onAutoClick(workers);
-    }
-    setWorkerPulseKey((prev) => prev + 1);
-  }, [onAutoClick]);
+
 
 
 
