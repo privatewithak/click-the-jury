@@ -10,7 +10,6 @@ export interface GameState {
   currentLevel: number;
   levels: LevelItem[];
   accumulator: number;
-  // workerProgress убран - он теперь в компоненте
 }
 
 type Action = 
@@ -31,6 +30,9 @@ const initialState: GameState = {
 
 const SAVE_KEY_V2 = 'jury-clicker-v2';
 const SAVE_KEY_V1 = 'jury-clicker-progress-v1';
+
+
+export const AUTO_CLICK_INTERVAL = 1000; 
 
 function reducer(state: GameState, action: Action): GameState {
   const updateProgress = (s: GameState, addedClicks: number): GameState => {
@@ -64,14 +66,18 @@ function reducer(state: GameState, action: Action): GameState {
       const currentAcc = state.accumulator;
       let newAcc = currentAcc + action.deltaMs;
       let gained = 0;
-
-      if (newAcc >= 1100) {
+   
+      
+      if (newAcc >= AUTO_CLICK_INTERVAL) {
         const cps = getTotalCPS(state);
-        const secondsPassed = Math.floor(newAcc / 1000);
+       
+        const ticksPassed = Math.floor(newAcc / AUTO_CLICK_INTERVAL);
         
-        if (secondsPassed > 0) {
-          gained = cps * secondsPassed;
-          newAcc = newAcc % 1000;
+        if (ticksPassed > 0) {
+  
+          gained = cps * ticksPassed;
+        
+          newAcc = newAcc % AUTO_CLICK_INTERVAL;
         }
       }
 
@@ -80,28 +86,27 @@ function reducer(state: GameState, action: Action): GameState {
       }
 
       const newState = updateProgress(state, gained);
-      return { ...newState, accumulator: newAcc };
+      return { ...newState, accumulator: newAcc, };
     }
-case 'BUY_UPGRADE': {
-  const cfg = getUpgradeConfig(action.id);
-  if (!cfg) return state;
-  
-  
-  const isOneTime = cfg.effectType === 'passive';
-  const curCount = state.upgrades[action.id] || 0;
-  if (isOneTime && curCount >= 1) return state; 
+    case 'BUY_UPGRADE': {
+      const cfg = getUpgradeConfig(action.id);
+      if (!cfg) return state;
+      
+      const isOneTime = cfg.effectType === 'passive';
+      const curCount = state.upgrades[action.id] || 0;
+      if (isOneTime && curCount >= 1) return state; 
 
-  const cost = calculateCost(cfg, curCount);
-  if (state.totalClicks < cost) return state;
-  
-  const newCount = isOneTime ? 1 : curCount + 1;
-  
-  return {
-    ...state,
-    totalClicks: state.totalClicks - cost,
-    upgrades: { ...state.upgrades, [action.id]: newCount }
-  };
-}
+      const cost = calculateCost(cfg, curCount);
+      if (state.totalClicks < cost) return state;
+      
+      const newCount = isOneTime ? 1 : curCount + 1;
+      
+      return {
+        ...state,
+        totalClicks: state.totalClicks - cost,
+        upgrades: { ...state.upgrades, [action.id]: newCount }
+      };
+    }
     case 'SELL_UPGRADE': {
       const cfg = getUpgradeConfig(action.id);
       const curCount = state.upgrades[action.id] || 0;
@@ -158,7 +163,7 @@ export default function useGameState() {
             upgrades: {
               union: old.unionWorkers || 0,
               clickPower: Math.max(0, (old.clickPower || 1) - 1),
-            }
+            },
           };
           dispatch({ type: 'LOAD_SAVE', state: migrated });
           localStorage.removeItem(SAVE_KEY_V1);
@@ -185,8 +190,8 @@ export default function useGameState() {
       const delta = ts - last;
       last = ts;
       
-      
       const cps = getTotalCPS(stateRef.current);
+
       if (cps > 0) {
         dispatch({ 
           type: 'TICK', 

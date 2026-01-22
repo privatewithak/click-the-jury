@@ -1,99 +1,79 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CARD_THEMES } from './cardthemes';
-
-interface WorkerBarProps {
-  enabled?: boolean;
-  workers?: number;
-  label?: string;
-  theme?: Record<string, string>;
-  workerInterval: number;
-  onAutoClick: (count: number) => void;
-  onProgressChange?: (progress: number, isFull: boolean) => void; // ЭТО НУЖНО ДЛЯ АНИМАЦИИ В ClickCard
-}
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import { AUTO_CLICK_INTERVAL } from './hooks/useGameState';
 
 export default function WorkerBar({
-  enabled = false,
   workers = 0,
-  label = 'union workers',
   theme,
-  workerInterval,
-  onAutoClick,
-  onProgressChange,
-}: WorkerBarProps) {
-  const rafRef = useRef<number | null>(null);
-  const startRef = useRef<number | null>(null);
-  const [progress, setProgress] = useState(0);
+  label = 'union workers',
+  onPulse,
+  onProgressChange
+}: {
+  workers: number;
+  theme?: any;
+  label?: string;
+  onPulse?: () => void;
+  onProgressChange: (value: number, isFull: boolean) => void;
+}) {
   const activeTheme = theme ?? CARD_THEMES.slate;
+  
+
+  const progress = useMotionValue(0);
+
+  const widthPercent = useTransform(progress, v => `${v}%`);
+  
+
+  const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
-    if (!enabled || workers <= 0 || workerInterval <= 0) {
+    if (workers <= 0) {
+      progress.set(0);
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setProgress(0);
-      onProgressChange?.(0, false);
+      setDisplayValue(0);
+      onProgressChange(0, false);
       return;
     }
 
-    startRef.current = null;
-
-    const step = (t: number) => {
-      if (startRef.current === null) startRef.current = t;
+    const controls = animate(progress, 100, {
+      duration: AUTO_CLICK_INTERVAL / 1000, 
+      ease: "linear", 
+      repeat: Infinity, 
+      repeatType: "loop", 
+      onRepeat: () => {
+     
+        onPulse?.();
+       
+        onProgressChange(1, true);
+        
       
-      const elapsed = t - startRef.current;
-      const p = Math.min(elapsed / workerInterval, 1);
-      const isFull = p >= 1;
-
-      setProgress(p);
-      onProgressChange?.(p, isFull); // ОБЯЗАТЕЛЬНО ВЫЗЫВАТЬ ДЛЯ АНИМАЦИИ
-
-      if (isFull) {
-        onAutoClick(workers);
-        // Сбрасываем прогресс только после клика
-        startRef.current = t;
-        setProgress(0);
-        onProgressChange?.(0, true); // Сбрасываем анимацию
+        requestAnimationFrame(() => {
+            onProgressChange(0, false);
+        });
+      },
+      onUpdate: (latest) => {
+        
+        setDisplayValue(Math.round(latest));
+       
+        onProgressChange(latest / 100, false);
       }
+    });
 
-      rafRef.current = requestAnimationFrame(step);
-    };
-
-    rafRef.current = requestAnimationFrame(step);
-    
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, [enabled, workers, workerInterval, onAutoClick, onProgressChange]);
-
-  const clampedProgress = Math.min(Math.max(progress, 0), 1);
-  const progressPercent = clampedProgress * 100;
-  const pct = Math.round(progressPercent);
-  const isFull = clampedProgress >= 1;
+    return () => controls.stop();
+  }, [workers, progress, onPulse, onProgressChange]);
 
   return (
     <div className="w-full mt-3 select-none">
       <div className={`flex items-center justify-between text-xs ${activeTheme.textSoft} mb-1`}>
         <span>{label}</span>
-        <span className={activeTheme.textAccent}>{pct}%</span>
+        <span className={activeTheme.textAccent}>{displayValue}%</span>
       </div>
 
-      <div
-        className={`relative h-3 rounded-full ${activeTheme.progressTrack} overflow-hidden ring-1 ring-white/10`}
-        style={{ opacity: isFull ? 0 : 1 }}
-      >
-        <div
+      <div className={`relative h-3 rounded-full ${activeTheme.progressTrack} overflow-hidden ring-1 ring-white/10`}>
+
+        <motion.div
           className={`absolute inset-0 left-0 rounded-full ${activeTheme.progressFill}`}
-          style={{ 
-            transform: `scaleX(${clampedProgress})`,
-            transformOrigin: "left center"
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background: "linear-gradient(90deg, rgba(255,255,255,0.00), rgba(255,255,255,0.12), rgba(255,255,255,0.00))",
-            transform: `translateX(${(clampedProgress * 100) - 50}%)`,
-            opacity: 0.25,
-            pointerEvents: "none",
-          }}
+          style={{ width: widthPercent }}
         />
       </div>
     </div>

@@ -187,7 +187,7 @@ const ParticlesCanvas = forwardRef<ParticlesHandle, { image: string }>(function 
   );
 });
 
-// Using shared `WorkerBar` component from './WorkerBar' (typed in its module)
+
 
 
 function ClickCard({
@@ -208,10 +208,7 @@ function ClickCard({
   const audioBufferRef = useRef<AudioBuffer | null>(null);
   const loadingRef = useRef<boolean>(false);
 
-  const { state, dispatch } = useGameState();
-  const handleAutoClick = useCallback((amount: number) => {
-  dispatch({ type: 'AUTO_CLICK', amount });
-}, [dispatch]);
+  const { state } = useGameState();
   // ref for particle emitter
   const particlesCanvasRef = useRef<ParticlesHandle | null>(null);
 
@@ -225,11 +222,11 @@ function ClickCard({
   const [isPulse, setIsPulse] = useState(false);
   const progressBarRef = useRef<HTMLDivElement | null>(null);
   const workerGlowRef = useRef<HTMLDivElement | null>(null);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [workerPulseKey, setWorkerPulseKey] = useState(0);
   const workerTextRef = useRef<HTMLParagraphElement | null>(null);
 
+
   const imageStretch = useAnimation();
+
 
 
   // sync motion value when logical progress changes
@@ -249,20 +246,26 @@ function ClickCard({
     return () => clearTimeout(id);
   }, [clicks]);
 
-  const handleWorkerProgress = useCallback((value: number, isFull?: boolean) => {
-    const node = workerGlowRef.current;
-    if (!node) return;
+    const [workerPulseKey, setWorkerPulseKey] = useState(0);
 
-    const clamped = Math.min(Math.max(value, 0), 1);
-    const full = Boolean(isFull);
-    const eased = Math.pow(clamped, 0.82);
-    const glowOpacity = eased * 0.22 + (full ? 0.05 : 0);
-    const glowScale = eased;
+const handleWorkerPulse = useCallback(() => { 
+  setIsPulse(true);
+  window.setTimeout(() => setIsPulse(false), 360);
+  setWorkerPulseKey((k) => k + 1);
+}, []);
 
-    node.style.setProperty('--worker-glow-opacity', glowOpacity.toFixed(3));
-    node.style.setProperty('--worker-glow-scale', glowScale.toFixed(3));
-    node.dataset.workerFull = full ? '1' : '0';
-  }, []);
+const handleWorkerProgress = useCallback((value: number, isFull: boolean) => { 
+  const node = workerGlowRef.current;
+  if (!node) return;
+  const clamped = Math.min(Math.max(value, 0), 1);
+  const full = isFull; 
+  const eased = Math.pow(clamped, 0.82);
+  const glowOpacity = eased * 0.22 + (full ? 0.05 : 0);
+  const glowScale = eased;
+  node.style.setProperty('--worker-glow-opacity', glowOpacity.toFixed(3));
+  node.style.setProperty('--worker-glow-scale', glowScale.toFixed(3));
+  node.dataset.workerFull = full ? '1' : '0';
+}, []);
 
   useEffect(() => {
     const container = workerGlowRef.current;
@@ -413,6 +416,8 @@ useEffect(() => {
 
   if (!unlocked) return null;
     
+
+
     return (
       <>
       
@@ -428,7 +433,7 @@ useEffect(() => {
         >
           <div className={`worker-card-glow ${t.progressFill ?? ''}`} />
           {workersCount > 0 && (
-            <div key={workerPulseKey} className={`worker-card-pulse ${t.progressDot ?? ''}`} />
+            <div key={`worker-pulse-top-${workerPulseKey}`} className={`worker-card-pulse ${t.progressDot ?? ''}`} />
           )} 
           <div className="relative z-10 flex w-full flex-col items-center gap-4 sm:gap-5 md:gap-6">
             <div className="flex w-full align-content text-[11px] text-slate-300 sm:text-xs md:text-sm justify-between">
@@ -458,17 +463,17 @@ useEffect(() => {
               </p>
 
                 <div className='w-8/10'>
-            <WorkerBar 
-              enabled={workersCount > 0}
-              workers={workersCount}
-              workerInterval={1100}
-              onAutoClick={handleAutoClick}
-                  onProgressChange={handleWorkerProgress}
-                  theme={theme}
-            />
+<WorkerBar 
+  workers={workersCount}
+  onPulse={handleWorkerPulse} 
+  onProgressChange={handleWorkerProgress} 
+  theme={theme}
+/>
                  
               </div>
-              
+              {workersCount > 0 && (
+  <div key={`worker-pulse-bottom-${workerPulseKey}`} className={`worker-card-pulse ${t.progressDot ?? ''}`} />
+)}
             <div className="flex flex-col items-center gap-3 w-full">
   <div className="flex w-full max-w-md gap-3 mt-2 -mb-2">
     <button
