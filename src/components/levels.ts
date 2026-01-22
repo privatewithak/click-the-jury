@@ -30,6 +30,8 @@ import Sam from '/sam.png'
 import SamSound from '/sam.wav'
 import Spikewall from '/spikewall.png'
 import SpikewallSound from '/spikewall.wav'
+import Olythos from '/olythos.png'
+import OlythosSound from '/olythos.wav'
 
 
 export interface LevelItem {
@@ -173,7 +175,7 @@ export const level: LevelItem[] = [
         id: 'freaky spear',
         image: FreakSpear,
         sound: FreakSpearSound,
-        clicksNeeded: 10000000,
+        clicksNeeded: 8000000,
         currentClicks: 0,
         unlocked: false,
         theme: 'rose'
@@ -182,11 +184,20 @@ export const level: LevelItem[] = [
     id: 'magician',
     image: Sam,
     sound: SamSound,
-    clicksNeeded: 27000000,
+    clicksNeeded: 13000000,
     currentClicks: 0,
     unlocked: false,
     theme: 'cyan'
-    }
+  },
+  {
+    id: 'freaky olythos',
+    image: Olythos,
+    sound: OlythosSound,
+    clicksNeeded: 20000000,
+    currentClicks: 0,
+    unlocked: false,
+    theme: 'sky'
+  }
 
 
     ]
