@@ -32,7 +32,10 @@ import Spikewall from '/spikewall.png'
 import SpikewallSound from '/spikewall.wav'
 import Olythos from '/olythos.png'
 import OlythosSound from '/olythos.wav'
-
+import FreakyCitizen from '/freakycitizen.png'
+import FreakyCitizenSound from '/freakycitizen.wav'
+import EasterBreen from '/easterbreen.png'
+import EasterBreenSound from '/easterbreen.wav'
 
 export interface LevelItem {
     id: string;
@@ -197,6 +200,24 @@ export const level: LevelItem[] = [
     currentClicks: 0,
     unlocked: false,
     theme: 'sky'
+  },
+  {
+    id: 'freaky citizen',
+    image: FreakyCitizen,
+    sound: FreakyCitizenSound,
+    clicksNeeded: 45000000,
+    currentClicks: 0,
+    unlocked: false,
+    theme: 'zinc'
+  },
+  {
+    id: 'easter breen',
+    image: EasterBreen,
+    sound: EasterBreenSound,
+    clicksNeeded: 100000000,
+    currentClicks: 0,
+    unlocked: false,
+    theme: 'pink'
   }
 
 

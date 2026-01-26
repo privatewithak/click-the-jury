@@ -38,6 +38,24 @@ const UPGRADES: Record<string, Upgrade> = {
         multiplier: 1.15,
         effectType: 'autoclick',
         effectValue: 2,
+    },
+    razor: {
+        id: 'razor',
+        label: 'razor guardian',
+        subLabel: '+4 clicks per second',
+        baseCost: 1140,
+        multiplier: 1.12,
+        effectType: 'autoclick',
+        effectValue: 4,
+    },
+    rebev: {
+        id: 'rebev',
+        label: 'rebev camper',
+        subLabel: '+3 power to the click',
+        baseCost: 825,
+        multiplier: 1.25,
+        effectType: 'clickPower',
+        effectValue: 3,
     }
 };
 
