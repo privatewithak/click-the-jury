@@ -36,6 +36,8 @@ import FreakyCitizen from '/freakycitizen.png'
 import FreakyCitizenSound from '/freakycitizen.wav'
 import EasterBreen from '/easterbreen.png'
 import EasterBreenSound from '/easterbreen.wav'
+import JuryAtHome from '/juryathome.png'
+import JuryAtHomeSound from '/juryathome.wav'
 
 export interface LevelItem {
     id: string;
@@ -184,10 +186,19 @@ export const level: LevelItem[] = [
         theme: 'rose'
   },
   {
+    id: 'jury at home',
+    image: JuryAtHome,
+    sound: JuryAtHomeSound,
+    clicksNeeded: 10000000,
+    currentClicks: 0,
+    unlocked: false,
+    theme: 'yellow'
+  },
+  {
     id: 'magician',
     image: Sam,
     sound: SamSound,
-    clicksNeeded: 13000000,
+    clicksNeeded: 15000000,
     currentClicks: 0,
     unlocked: false,
     theme: 'cyan'
