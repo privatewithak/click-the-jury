@@ -21,7 +21,7 @@
 - access an in-game updatelog from the card UI
 
 ### stack:
-- react + swc
+- react + react compiler
 - tailwindcss
 - framer motion
 
