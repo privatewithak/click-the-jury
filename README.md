@@ -1,7 +1,7 @@
 # Click the ~JURY~ ~CCA~ UU.
 
 ![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-SWC-646cff?logo=vite&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-ReactCompiler-646cff?logo=vite&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-38bdf8?logo=tailwindcss&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer%20Motion-animations-black?logo=framer&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green)
